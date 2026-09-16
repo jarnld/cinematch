@@ -15,10 +15,21 @@
         <span class="brand-mark" aria-hidden="true"></span>
         <span>CineMatch</span>
       </a>
-      <button class="quiet-button" id="restartTop" type="button">Start over</button>
+      <button class="quiet-button" id="restartTop" type="button">Restart</button>
     </header>
 
-    <section id="quizView" class="quiz-view" aria-live="polite">
+    <section id="landingView" class="landing-view" aria-labelledby="landingTitle">
+      <div class="landing-orbit" aria-hidden="true"><span>01</span><span>06</span><i></i></div>
+      <div class="landing-copy">
+        <p class="eyebrow">ONE FILM. ZERO SCROLLING.</p>
+        <h1 id="landingTitle">Cine<span>Match</span></h1>
+        <p>Six quick choices. One movie picked for this exact night.</p>
+        <button class="primary-button start-button" id="startButton" type="button">Get started <span aria-hidden="true">→</span></button>
+      </div>
+      <p class="landing-foot">A tiny game for the hardest part of movie night.</p>
+    </section>
+
+    <section id="quizView" class="quiz-view" hidden aria-live="polite">
       <div class="progress-row">
         <span id="questionCounter">01 / 06</span>
         <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
@@ -28,6 +39,7 @@
         <h1 id="questionTitle">How much time do you have?</h1>
         <p class="question-help" id="questionHelp">We’ll keep the credits inside your evening.</p>
         <div id="answerGrid" class="answer-grid"></div>
+        <div id="questionExtra"></div>
       </div>
       <footer class="quiz-footer">
         <button class="back-button" id="backButton" type="button" disabled><span aria-hidden="true">←</span> Back</button>
@@ -56,10 +68,10 @@
         <div class="result-tags" id="resultTags"></div>
         <div class="result-actions">
           <button class="primary-button" id="watchButton" type="button">Where to watch</button>
-          <button class="secondary-button" id="anotherButton" type="button">Try another</button>
+          <button class="secondary-button" id="anotherButton" type="button">Run it again</button>
         </div>
         <p class="availability-note" id="availabilityNote">Streaming availability is the next live integration.</p>
-        <button class="retake-button" id="restartResult" type="button">Retake the match <span aria-hidden="true">↗</span></button>
+        <button class="retake-button" id="restartResult" type="button">Restart from the beginning <span aria-hidden="true">↗</span></button>
       </div>
       <footer class="data-credit">
         <a href="https://www.themoviedb.org" target="_blank" rel="noreferrer">Poster imagery via TMDB</a>
