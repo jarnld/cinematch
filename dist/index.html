@@ -55,6 +55,23 @@
       <p class="loading-note">Balancing time, mood, pace, and company.</p>
     </section>
 
+    <section id="refineView" class="refine-view" hidden aria-live="polite">
+      <div class="refine-head">
+        <p class="eyebrow">BONUS ROUND</p>
+        <h1>What should we change?</h1>
+        <p>Your original answers stay locked. Give us one more signal for the reroll.</p>
+      </div>
+      <div class="refine-grid" id="refineGrid">
+        <button class="refine-card" data-refine="lighter" type="button"><span>01</span><strong>More laughs</strong><small>Lighter and more playful</small></button>
+        <button class="refine-card" data-refine="tenser" type="button"><span>02</span><strong>More tension</strong><small>Sharper, darker, twistier</small></button>
+        <button class="refine-card" data-refine="faster" type="button"><span>03</span><strong>Pick up the pace</strong><small>More momentum, less setup</small></button>
+        <button class="refine-card" data-refine="slower" type="button"><span>04</span><strong>Let it breathe</strong><small>Quieter and more atmospheric</small></button>
+        <button class="refine-card" data-refine="shorter" type="button"><span>05</span><strong>Make it shorter</strong><small>Trim the runtime</small></button>
+        <button class="refine-card" data-refine="wildcard" type="button"><span>06</span><strong>Go off-script</strong><small>Surprise me completely</small></button>
+      </div>
+      <button class="back-button refine-back" id="refineBack" type="button"><span aria-hidden="true">←</span> Keep this result</button>
+    </section>
+
     <section id="resultView" class="result-view" hidden aria-live="polite">
       <div class="poster-wrap">
         <img id="moviePoster" src="" alt="" />

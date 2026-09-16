@@ -61,10 +61,12 @@ let answers = {};
 let shownTitles = [];
 let runtimeMinutes = 115;
 let loadingTimer;
+let lastMovie = null;
 
 const landingView = document.querySelector("#landingView");
 const quizView = document.querySelector("#quizView");
 const loadingView = document.querySelector("#loadingView");
+const refineView = document.querySelector("#refineView");
 const resultView = document.querySelector("#resultView");
 const answerGrid = document.querySelector("#answerGrid");
 const questionExtra = document.querySelector("#questionExtra");
@@ -74,8 +76,10 @@ function startQuiz() {
   answers = {};
   shownTitles = [];
   runtimeMinutes = 115;
+  lastMovie = null;
   landingView.hidden = true;
   loadingView.hidden = true;
+  refineView.hidden = true;
   resultView.hidden = true;
   quizView.hidden = false;
   document.querySelector("#restartTop").style.visibility = "visible";
@@ -166,6 +170,13 @@ function scoreMovie(movie) {
     if (answers[key] === value) score += key === "actor" ? 3 : 2;
     if (answers[key] === "any" || answers[key] === "surprise") score += 1;
   }
+  const refinement = answers.refinement;
+  if (refinement === "lighter" && (["warm", "funny", "romantic"].includes(movie.fit.vibe) || movie.tags.some(tag => ["joyful", "hopeful", "breezy"].includes(tag)))) score += 5;
+  if (refinement === "tenser" && (movie.fit.vibe === "tense" || movie.tags.some(tag => ["twisty", "dark"].includes(tag)))) score += 5;
+  if (refinement === "faster" && (movie.fit.pace === "fast" || movie.minutes <= 110)) score += 5;
+  if (refinement === "slower" && (movie.fit.pace === "slow" || movie.fit.pace === "meditative" || movie.tags.includes("thoughtful"))) score += 5;
+  if (refinement === "shorter" && lastMovie && movie.minutes < lastMovie.minutes) score += Math.min(6, Math.ceil((lastMovie.minutes - movie.minutes) / 10));
+  if (refinement === "wildcard" && movie.fit.actor !== answers.actor && movie.fit.vibe !== answers.vibe) score += 5;
   return score;
 }
 
@@ -180,8 +191,10 @@ function beginMatching() {
   window.clearTimeout(loadingTimer);
   landingView.hidden = true;
   quizView.hidden = true;
+  refineView.hidden = true;
   resultView.hidden = true;
   loadingView.hidden = false;
+  document.querySelector(".loading-note").textContent = answers.refinement ? "Applying your new signal without losing the first six." : "Balancing time, mood, pace, and company.";
   document.querySelector("#restartTop").style.visibility = "hidden";
   window.scrollTo({ top: 0, behavior: "smooth" });
   loadingTimer = window.setTimeout(showResult, 1450);
@@ -199,9 +212,20 @@ function showResult() {
   const poster = document.querySelector("#moviePoster");
   poster.src = movie.poster;
   poster.alt = `${movie.title} movie poster`;
+  lastMovie = movie;
   loadingView.hidden = true;
   quizView.hidden = true;
   resultView.hidden = false;
+  document.querySelector("#restartTop").style.visibility = "visible";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showRefinement() {
+  resultView.hidden = true;
+  loadingView.hidden = true;
+  quizView.hidden = true;
+  landingView.hidden = true;
+  refineView.hidden = false;
   document.querySelector("#restartTop").style.visibility = "visible";
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -212,8 +236,10 @@ function restart() {
   answers = {};
   shownTitles = [];
   runtimeMinutes = 115;
+  lastMovie = null;
   quizView.hidden = true;
   loadingView.hidden = true;
+  refineView.hidden = true;
   resultView.hidden = true;
   landingView.hidden = false;
   document.querySelector("#restartTop").style.visibility = "hidden";
@@ -224,7 +250,15 @@ document.querySelector("#startButton").addEventListener("click", startQuiz);
 document.querySelector("#backButton").addEventListener("click", () => { if (current > 0) { current -= 1; answerGrid.style.display = "grid"; renderQuestion(); } });
 document.querySelector("#restartTop").addEventListener("click", restart);
 document.querySelector("#restartResult").addEventListener("click", restart);
-document.querySelector("#anotherButton").addEventListener("click", beginMatching);
+document.querySelector("#anotherButton").addEventListener("click", showRefinement);
+document.querySelector("#refineBack").addEventListener("click", () => {
+  refineView.hidden = true;
+  resultView.hidden = false;
+});
+document.querySelectorAll(".refine-card").forEach(button => button.addEventListener("click", () => {
+  answers.refinement = button.dataset.refine;
+  beginMatching();
+}));
 document.querySelector("#watchButton").addEventListener("click", () => {
   document.querySelector("#availabilityNote").textContent = "Next: connect TMDB watch providers and attribute JustWatch for regional availability.";
 });

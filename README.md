@@ -11,6 +11,7 @@ CineMatch is a gamified movie concierge: answer six quick questions and get one 
 - Ranked recommendations from a small demo catalog
 - A dedicated matching transition and real TMDB poster imagery
 - Reroll with the existing answers, plus a full restart flow
+- A six-choice bonus round that refines each reroll without discarding the original answers
 - Accessible keyboard controls and reduced-motion support
 
 Open `dist/index.html` or serve `dist/` with any static web server.

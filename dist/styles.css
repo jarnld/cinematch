@@ -88,6 +88,18 @@ h1 { margin: 0; font-family: "Space Grotesk", sans-serif; letter-spacing: -.055e
 .loading-track span { display: block; width: 42%; height: 100%; background: var(--red); animation: load 1.25s ease-in-out infinite; }
 .loading-note { color: var(--muted); font-size: .9rem; }
 
+.refine-view { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 54px 0; }
+.refine-head { max-width: 760px; margin-bottom: 38px; }
+.refine-head h1 { font-size: clamp(3rem, 7vw, 6.2rem); line-height: .92; }
+.refine-head > p:last-child { margin: 20px 0 0; color: var(--muted); font-size: 1rem; }
+.refine-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.refine-card { min-height: 156px; padding: 21px; border: 1px solid var(--line); background: var(--panel); text-align: left; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+.refine-card:hover, .refine-card:focus-visible { transform: translateY(-3px); border-color: var(--red); background: #120204; outline: none; }
+.refine-card span { display: block; margin-bottom: 34px; color: #57575b; font-size: .7rem; }
+.refine-card strong { display: block; margin-bottom: 7px; font: 600 1.08rem/1.2 "Space Grotesk", sans-serif; }
+.refine-card small { color: var(--muted); font-size: .82rem; }
+.refine-back { align-self: flex-start; margin-top: 25px; }
+
 .result-view { flex: 1; display: grid; grid-template-columns: minmax(240px, 390px) minmax(0, 1fr); grid-template-rows: 1fr auto; align-items: center; gap: 42px 76px; padding: 54px 0 30px; }
 .poster-wrap { position: relative; width: 100%; aspect-ratio: 2 / 3; background: #111; overflow: hidden; box-shadow: 22px 22px 0 #0c0c0c; }
 .poster-wrap::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); pointer-events: none; }
@@ -129,6 +141,10 @@ h1 { margin: 0; font-family: "Space Grotesk", sans-serif; letter-spacing: -.055e
   .actor-card { min-height: 238px; padding: 0; }
   .actor-card img { height: 170px; }
   .quiz-footer p { display: none; }
+  .refine-view { padding: 36px 0; }
+  .refine-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .refine-card { min-height: 142px; padding: 17px; }
+  .refine-card span { margin-bottom: 25px; }
   .result-view { grid-template-columns: 1fr; gap: 32px; padding: 36px 0 24px; align-items: start; }
   .poster-wrap { width: min(58vw, 240px); box-shadow: 10px 10px 0 #0c0c0c; }
   .poster-score { top: 7px; left: 7px; padding: 6px; font-size: .65rem; }
