@@ -2,94 +2,87 @@ const questions = [
   {
     key: "runtime", eyebrow: "TONIGHT'S WINDOW", title: "How much time do you have?", help: "We’ll keep the credits inside your evening.",
     options: [
-      ["quick", "⚡", "Under 90 minutes", "Tight, fast, no filler"],
-      ["standard", "◷", "90–120 minutes", "The sweet spot"],
-      ["epic", "◉", "Over 2 hours", "Make a night of it"],
-      ["any", "∞", "Time is no object", "I’m here for the journey"]
+      ["quick", "Under 90 min", "Tight and efficient"], ["short", "90–105 min", "A compact feature"],
+      ["standard", "105–125 min", "The sweet spot"], ["long", "125–145 min", "Room to breathe"],
+      ["epic", "Over 145 min", "Make a night of it"], ["any", "Any length", "Best match wins"]
     ]
   },
   {
-    key: "vibe", eyebrow: "SET THE MOOD", title: "What should the movie feel like?", help: "Go with the mood you want—not the mood you’re in.",
+    key: "vibe", eyebrow: "SET THE MOOD", title: "What should it feel like?", help: "Choose the feeling you want when the credits roll.",
     options: [
-      ["warm", "☀", "Warm & hopeful", "Leave me feeling lighter"],
-      ["tense", "⌁", "Tense & twisty", "Keep me guessing"],
-      ["funny", "☺", "Smart & funny", "Clever beats chaotic"],
-      ["wonder", "✦", "Full of wonder", "Take me somewhere else"]
+      ["warm", "Warm", "Hopeful and human"], ["tense", "Tense", "Keep me guessing"],
+      ["funny", "Funny", "Smart over silly"], ["wonder", "Transporting", "Take me somewhere else"],
+      ["dark", "Dark", "Let it get under my skin"], ["romantic", "Romantic", "Earn the chemistry"]
     ]
   },
   {
-    key: "pace", eyebrow: "PICK A RHYTHM", title: "How should tonight move?", help: "This helps us separate a slow burn from a rocket launch.",
+    key: "pace", eyebrow: "PICK A RHYTHM", title: "How should tonight move?", help: "Slow burn, rocket launch, or somewhere between.",
     options: [
-      ["slow", "≈", "Let it simmer", "Atmosphere over action"],
-      ["balanced", "↝", "A steady pull", "Story with momentum"],
-      ["fast", "»", "Hit the gas", "Hook me immediately"],
-      ["surprise", "?", "Surprise me", "I trust the process"]
+      ["slow", "Slow burn", "Atmosphere first"], ["meditative", "Meditative", "Quiet and absorbing"],
+      ["balanced", "Steady pull", "Story with momentum"], ["fast", "Fast", "Hook me early"],
+      ["relentless", "Relentless", "No time to look away"], ["surprise", "Surprise me", "Ignore the rules"]
     ]
   },
   {
-    key: "company", eyebrow: "WHO'S WATCHING", title: "Who has the remote?", help: "We’ll avoid recommending a solo art film to movie-night democracy.",
+    key: "company", eyebrow: "WHO'S WATCHING", title: "Who has the remote?", help: "Movie-night democracy changes the answer.",
     options: [
-      ["solo", "1", "Just me", "A personal pick"],
-      ["date", "2", "Date night", "Something to talk about"],
-      ["friends", "3+", "A group of friends", "Crowd-pleasing energy"],
-      ["family", "⌂", "Family night", "Broad appeal, easy watch"]
+      ["solo", "Just me", "A personal pick"], ["date", "Date night", "Something with chemistry"],
+      ["partner", "My partner", "A shared obsession"], ["friends", "Friends", "Crowd-pleasing energy"],
+      ["family", "Family", "Broad appeal"], ["kids", "Kids included", "All-ages, not dull"]
     ]
   },
   {
-    key: "actor", eyebrow: "CAST YOUR VOTE", title: "Who would you follow into a story?", help: "Not a binding choice—just a useful taste signal.",
+    key: "actor", eyebrow: "CAST YOUR VOTE", title: "Who would you follow anywhere?", help: "Not binding—just a useful signal.",
     options: [
-      ["amy", "A", "Amy Adams", "Grounded and emotionally sharp"],
-      ["daniel", "D", "Daniel Craig", "Charisma with an edge"],
-      ["issa", "I", "Issa Rae", "Wit and effortless warmth"],
-      ["pedro", "P", "Pedro Pascal", "Heart, humor, adventure"]
+      ["amy", "Amy Adams", "Emotional precision"], ["daniel", "Daniel Craig", "Charisma with an edge"],
+      ["issa", "Issa Rae", "Wit and warmth"], ["pedro", "Pedro Pascal", "Heart and humor"],
+      ["andy", "Andy Samberg", "Commitment to the bit"], ["matt", "Matt Damon", "Competence under pressure"]
     ]
   },
   {
-    key: "service", eyebrow: "WHERE YOU WATCH", title: "Which screen can we send you to?", help: "Choose the service you reach for first. Live availability comes in the next build.",
+    key: "service", eyebrow: "WHERE YOU WATCH", title: "Which service comes first?", help: "We’ll connect live regional availability next.",
     options: [
-      ["netflix", "N", "Netflix", "Your first stop"],
-      ["max", "M", "Max", "Prestige and blockbusters"],
-      ["prime", "P", "Prime Video", "Included or rentable"],
-      ["any", "＋", "Any service", "Best match wins"]
+      ["netflix", "Netflix", "Your first stop"], ["max", "Max", "Prestige and blockbusters"],
+      ["prime", "Prime Video", "Included or rentable"], ["hulu", "Hulu", "Movies and originals"],
+      ["disney", "Disney+", "Franchises and family"], ["any", "Any service", "Best match wins"]
     ]
   }
 ];
 
 const movies = [
-  { title: "Arrival", year: 2016, runtime: "1h 56m", genre: "Sci-fi / Drama", tags: ["thoughtful", "emotional", "slow burn"], fit: { runtime:"standard", vibe:"wonder", pace:"slow", company:"date", actor:"amy" }, reason: "Thoughtful without feeling like homework—big ideas, an emotional core, and exactly the kind of slow-burn wonder you asked for." },
-  { title: "Knives Out", year: 2019, runtime: "2h 10m", genre: "Mystery / Comedy", tags: ["witty", "twisty", "ensemble"], fit: { runtime:"epic", vibe:"tense", pace:"balanced", company:"friends", actor:"daniel" }, reason: "A sharp, playful mystery with enough momentum for a group and enough detail to reward everyone paying attention." },
-  { title: "The Mitchells vs. the Machines", year: 2021, runtime: "1h 54m", genre: "Animation / Comedy", tags: ["joyful", "inventive", "family"], fit: { runtime:"standard", vibe:"funny", pace:"fast", company:"family", actor:"issa" }, reason: "Inventive, genuinely funny, and big-hearted—a family crowd-pleaser that never feels like the safe option." },
-  { title: "The Unbearable Weight of Massive Talent", year: 2022, runtime: "1h 47m", genre: "Action / Comedy", tags: ["self-aware", "fast", "buddy comedy"], fit: { runtime:"standard", vibe:"funny", pace:"fast", company:"friends", actor:"pedro" }, reason: "A fast, charming buddy comedy with just enough action and a wonderfully game performance at its center." },
-  { title: "Palm Springs", year: 2020, runtime: "1h 30m", genre: "Comedy / Romance", tags: ["romantic", "clever", "breezy"], fit: { runtime:"quick", vibe:"warm", pace:"balanced", company:"date", actor:"issa" }, reason: "Short, clever, and sneakily sincere—the rare date-night comedy that gives you something to talk about afterward." },
-  { title: "The Martian", year: 2015, runtime: "2h 24m", genre: "Sci-fi / Adventure", tags: ["hopeful", "smart", "adventure"], fit: { runtime:"epic", vibe:"warm", pace:"balanced", company:"family", actor:"pedro" }, reason: "Optimistic, funny, and satisfyingly smart—an expansive adventure powered by competence instead of cynicism." }
+  { title: "Arrival", year: 2016, runtime: "1h 56m", genre: "Sci-fi / Drama", poster: "https://image.tmdb.org/t/p/w500/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg", tags: ["thoughtful", "emotional", "slow burn"], fit: { runtime:"standard", vibe:"wonder", pace:"slow", company:"date", actor:"amy" }, reason: "Thoughtful without feeling like homework—big ideas, an emotional core, and exactly the slow-burn wonder you asked for." },
+  { title: "Knives Out", year: 2019, runtime: "2h 10m", genre: "Mystery / Comedy", poster: "https://image.tmdb.org/t/p/w500/pThyQovXQrw2m0s9x82twj48Jq4.jpg", tags: ["witty", "twisty", "ensemble"], fit: { runtime:"long", vibe:"tense", pace:"balanced", company:"friends", actor:"daniel" }, reason: "A sharp, playful mystery with enough momentum for a group and enough detail to reward everyone paying attention." },
+  { title: "The Mitchells vs. the Machines", year: 2021, runtime: "1h 54m", genre: "Animation / Comedy", poster: "https://image.tmdb.org/t/p/w500/mI2Di7HmskQQ34kz0iau6J1vr70.jpg", tags: ["joyful", "inventive", "family"], fit: { runtime:"standard", vibe:"funny", pace:"fast", company:"kids", actor:"issa" }, reason: "Inventive, genuinely funny, and big-hearted—a family crowd-pleaser that never feels like the safe option." },
+  { title: "The Unbearable Weight of Massive Talent", year: 2022, runtime: "1h 47m", genre: "Action / Comedy", poster: "https://image.tmdb.org/t/p/w500/aqhLeieyTpTUKPOfZ3jzo2La0Mq.jpg", tags: ["self-aware", "fast", "buddy comedy"], fit: { runtime:"short", vibe:"funny", pace:"fast", company:"friends", actor:"pedro" }, reason: "A fast, charming buddy comedy with just enough action and a wonderfully game performance at its center." },
+  { title: "Palm Springs", year: 2020, runtime: "1h 30m", genre: "Comedy / Romance", poster: "https://image.tmdb.org/t/p/w500/yf5IuMW6GHghu39kxA0oFx7Bxmj.jpg", tags: ["romantic", "clever", "breezy"], fit: { runtime:"short", vibe:"romantic", pace:"balanced", company:"date", actor:"andy" }, reason: "Short, clever, and sneakily sincere—the rare date-night comedy that gives you something to talk about afterward." },
+  { title: "The Martian", year: 2015, runtime: "2h 24m", genre: "Sci-fi / Adventure", poster: "https://image.tmdb.org/t/p/w500/5BHuvQ6p9kfc091Z8RiFNhCwL4b.jpg", tags: ["hopeful", "smart", "adventure"], fit: { runtime:"long", vibe:"warm", pace:"balanced", company:"family", actor:"matt" }, reason: "Optimistic, funny, and satisfyingly smart—an expansive adventure powered by competence instead of cynicism." }
 ];
 
 let current = 0;
 let answers = {};
 let shownTitles = [];
+let loadingTimer;
 
 const quizView = document.querySelector("#quizView");
+const loadingView = document.querySelector("#loadingView");
 const resultView = document.querySelector("#resultView");
 const answerGrid = document.querySelector("#answerGrid");
 
 function renderQuestion() {
   const q = questions[current];
   const percent = Math.round(((current + 1) / questions.length) * 100);
-  document.querySelector("#questionCounter").textContent = `Question ${current + 1} of ${questions.length}`;
-  document.querySelector("#progressPercent").textContent = `${percent}%`;
+  document.querySelector("#questionCounter").textContent = `${String(current + 1).padStart(2, "0")} / ${String(questions.length).padStart(2, "0")}`;
   document.querySelector("#progressBar").style.width = `${percent}%`;
   document.querySelector("#questionEyebrow").textContent = q.eyebrow;
   document.querySelector("#questionTitle").textContent = q.title;
   document.querySelector("#questionHelp").textContent = q.help;
   document.querySelector("#backButton").disabled = current === 0;
-  answerGrid.innerHTML = q.options.map(([value, icon, title, subtitle]) => `
+  answerGrid.innerHTML = q.options.map(([value, title, subtitle], index) => `
     <button class="answer-card${answers[q.key] === value ? " selected" : ""}" data-value="${value}" type="button">
-      <span class="answer-icon" aria-hidden="true">${icon}</span>
+      <span class="answer-number">0${index + 1}</span>
       <span class="answer-copy"><strong>${title}</strong><span>${subtitle}</span></span>
     </button>`).join("");
-  answerGrid.querySelectorAll(".answer-card").forEach(button => {
-    button.addEventListener("click", () => selectAnswer(q.key, button.dataset.value));
-  });
+  answerGrid.querySelectorAll(".answer-card").forEach(button => button.addEventListener("click", () => selectAnswer(q.key, button.dataset.value)));
 }
 
 function selectAnswer(key, value) {
@@ -100,9 +93,9 @@ function selectAnswer(key, value) {
       current += 1;
       renderQuestion();
     } else {
-      showResult();
+      beginMatching();
     }
-  }, 220);
+  }, 180);
 }
 
 function scoreMovie(movie) {
@@ -119,9 +112,14 @@ function chooseMovie() {
   return [...pool].sort((a, b) => scoreMovie(b) - scoreMovie(a))[0];
 }
 
-function labelFor(key, value) {
-  const q = questions.find(item => item.key === key);
-  return q.options.find(option => option[0] === value)?.[2] || value;
+function beginMatching() {
+  window.clearTimeout(loadingTimer);
+  quizView.hidden = true;
+  resultView.hidden = true;
+  loadingView.hidden = false;
+  document.querySelector("#restartTop").style.visibility = "hidden";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  loadingTimer = window.setTimeout(showResult, 1700);
 }
 
 function showResult() {
@@ -133,8 +131,10 @@ function showResult() {
   document.querySelector("#movieReason").textContent = movie.reason;
   document.querySelector("#matchScore").textContent = score;
   document.querySelector("#resultTags").innerHTML = movie.tags.map(tag => `<span>${tag}</span>`).join("");
-  document.querySelector("#tasteReceipt").innerHTML = ["runtime", "vibe", "pace", "company", "actor", "service"].map(key => `
-    <div class="receipt-item"><span>${questions.find(q => q.key === key).eyebrow}</span><strong>${labelFor(key, answers[key])}</strong></div>`).join("");
+  const poster = document.querySelector("#moviePoster");
+  poster.src = movie.poster;
+  poster.alt = `${movie.title} movie poster`;
+  loadingView.hidden = true;
   quizView.hidden = true;
   resultView.hidden = false;
   document.querySelector("#restartTop").style.visibility = "visible";
@@ -142,20 +142,23 @@ function showResult() {
 }
 
 function restart() {
+  window.clearTimeout(loadingTimer);
   current = 0;
   answers = {};
   shownTitles = [];
+  loadingView.hidden = true;
   resultView.hidden = true;
   quizView.hidden = false;
+  document.querySelector("#restartTop").style.visibility = "visible";
   renderQuestion();
 }
 
 document.querySelector("#backButton").addEventListener("click", () => { if (current > 0) { current -= 1; renderQuestion(); } });
 document.querySelector("#restartTop").addEventListener("click", restart);
 document.querySelector("#restartResult").addEventListener("click", restart);
-document.querySelector("#anotherButton").addEventListener("click", showResult);
+document.querySelector("#anotherButton").addEventListener("click", beginMatching);
 document.querySelector("#watchButton").addEventListener("click", () => {
-  document.querySelector("#availabilityNote").textContent = "Live provider lookup is the next integration. Your taste match is working now.";
+  document.querySelector("#availabilityNote").textContent = "Next: connect TMDB watch providers and attribute JustWatch for regional availability.";
 });
 
 renderQuestion();
