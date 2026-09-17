@@ -44,14 +44,31 @@ The production recommendation service is being designed in [`docs/production-fou
 
 ### Run CineMatch locally
 
-You need Node.js 20 or newer. Installing Node.js also installs the `npm` command used below. After installing it, open Terminal and run:
+You need Node.js 20 or newer. Installing Node.js also installs the `npm` command used below. Confirm the installation in Terminal or PowerShell:
 
 ```bash
-cd /Users/jackarnold/Documents/Codex/2026-09-16/i-w/work/cinematch
+node --version
+npm --version
+```
+
+For a new checkout on macOS, Windows, or Linux:
+
+```bash
+git clone --branch production-foundation https://github.com/jarnld/cinematch.git
+cd cinematch
 npm run dev
 ```
 
-Then open [http://127.0.0.1:3000](http://127.0.0.1:3000) in a browser. Keep the Terminal window open while using CineMatch; press `Control-C` there to stop it.
+If you cloned the repository before the `production-foundation` branch was published, update the existing checkout instead:
+
+```bash
+git fetch origin
+git switch production-foundation
+git pull
+npm run dev
+```
+
+Then open [http://127.0.0.1:3000](http://127.0.0.1:3000) in a browser. Keep the Terminal or PowerShell window open while using CineMatch; press `Control-C` there to stop it.
 
 No `npm install` step is currently required because this version has no third-party code dependencies. Run `npm test` whenever you want to check the recommendation rules.
 
