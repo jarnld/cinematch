@@ -42,6 +42,17 @@ The model should never invent the catalog or availability. Give it tools such as
 
 The production recommendation service is being designed in [`docs/production-foundation.md`](docs/production-foundation.md). Its API contracts live in [`schemas/`](schemas/) and separate hard constraints (runtime, region, availability, and safety) from softer taste signals (mood, pace, company, and cast).
 
+### Local recommendation service
+
+The first deterministic service is implemented without third-party dependencies. It uses a six-film fixture catalog to exercise real filtering and ranking behavior; its availability records are test fixtures and must not be presented as current streaming data.
+
+```bash
+npm test
+npm run start:service
+```
+
+The service exposes `GET /health` and `POST /api/recommend`. The current static prototype is not connected to this endpoint yet.
+
 ## Repository setup
 
 This folder is intentionally ready to become its own Git repository. Keep secrets in environment variables and never commit `.env` files.

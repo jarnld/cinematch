@@ -1,0 +1,114 @@
+[
+  {
+    "id": "arrival-2016",
+    "title": "Arrival",
+    "year": 2016,
+    "runtimeMinutes": 116,
+    "overview": "A linguist works to understand visitors whose arrival may reshape humanity.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg",
+    "genres": ["science-fiction", "drama"],
+    "moods": ["transporting", "warm"],
+    "pace": "slow",
+    "audiences": ["solo", "date", "partner"],
+    "cast": [{ "id": "person-amy-adams", "name": "Amy Adams" }],
+    "content": { "certification": "PG-13", "kidsSafe": false },
+    "availability": [
+      { "region": "US", "providerId": "prime", "providerName": "Prime Video", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
+      { "region": "US", "providerId": "apple", "providerName": "Apple TV", "monetizationType": "rent", "checkedAt": "2026-09-16T00:00:00Z" }
+    ],
+    "source": { "provider": "cinematch-fixture", "externalId": "arrival-2016" }
+  },
+  {
+    "id": "knives-out-2019",
+    "title": "Knives Out",
+    "year": 2019,
+    "runtimeMinutes": 130,
+    "overview": "A detective investigates a wealthy family's secrets after a suspicious death.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/pThyQovXQrw2m0s9x82twj48Jq4.jpg",
+    "genres": ["mystery", "comedy"],
+    "moods": ["tense", "funny"],
+    "pace": "balanced",
+    "audiences": ["date", "partner", "friends"],
+    "cast": [{ "id": "person-daniel-craig", "name": "Daniel Craig" }],
+    "content": { "certification": "PG-13", "kidsSafe": false },
+    "availability": [
+      { "region": "US", "providerId": "netflix", "providerName": "Netflix", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
+      { "region": "US", "providerId": "prime", "providerName": "Prime Video", "monetizationType": "rent", "checkedAt": "2026-09-16T00:00:00Z" }
+    ],
+    "source": { "provider": "cinematch-fixture", "externalId": "knives-out-2019" }
+  },
+  {
+    "id": "mitchells-vs-machines-2021",
+    "title": "The Mitchells vs. the Machines",
+    "year": 2021,
+    "runtimeMinutes": 114,
+    "overview": "A family road trip becomes an inventive fight to save the world.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/mI2Di7HmskQQ34kz0iau6J1vr70.jpg",
+    "genres": ["animation", "comedy", "adventure"],
+    "moods": ["funny", "warm"],
+    "pace": "fast",
+    "audiences": ["friends", "family", "kids"],
+    "cast": [{ "id": "person-issa-rae", "name": "Issa Rae" }],
+    "content": { "certification": "PG", "kidsSafe": true },
+    "availability": [
+      { "region": "US", "providerId": "netflix", "providerName": "Netflix", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" }
+    ],
+    "source": { "provider": "cinematch-fixture", "externalId": "mitchells-vs-machines-2021" }
+  },
+  {
+    "id": "unbearable-weight-2022",
+    "title": "The Unbearable Weight of Massive Talent",
+    "year": 2022,
+    "runtimeMinutes": 107,
+    "overview": "An actor's unusual assignment turns into a fast and self-aware adventure.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/aqhLeieyTpTUKPOfZ3jzo2La0Mq.jpg",
+    "genres": ["action", "comedy"],
+    "moods": ["funny", "warm"],
+    "pace": "fast",
+    "audiences": ["date", "partner", "friends"],
+    "cast": [{ "id": "person-pedro-pascal", "name": "Pedro Pascal" }],
+    "content": { "certification": "R", "kidsSafe": false },
+    "availability": [
+      { "region": "US", "providerId": "hulu", "providerName": "Hulu", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
+      { "region": "US", "providerId": "prime", "providerName": "Prime Video", "monetizationType": "rent", "checkedAt": "2026-09-16T00:00:00Z" }
+    ],
+    "source": { "provider": "cinematch-fixture", "externalId": "unbearable-weight-2022" }
+  },
+  {
+    "id": "palm-springs-2020",
+    "title": "Palm Springs",
+    "year": 2020,
+    "runtimeMinutes": 90,
+    "overview": "Two wedding guests find humor and connection in an impossible situation.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/yf5IuMW6GHghu39kxA0oFx7Bxmj.jpg",
+    "genres": ["comedy", "romance"],
+    "moods": ["romantic", "funny", "warm"],
+    "pace": "balanced",
+    "audiences": ["date", "partner", "friends"],
+    "cast": [{ "id": "person-andy-samberg", "name": "Andy Samberg" }],
+    "content": { "certification": "R", "kidsSafe": false },
+    "availability": [
+      { "region": "US", "providerId": "hulu", "providerName": "Hulu", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" }
+    ],
+    "source": { "provider": "cinematch-fixture", "externalId": "palm-springs-2020" }
+  },
+  {
+    "id": "the-martian-2015",
+    "title": "The Martian",
+    "year": 2015,
+    "runtimeMinutes": 144,
+    "overview": "An astronaut uses science, humor, and persistence to survive alone on Mars.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/5BHuvQ6p9kfc091Z8RiFNhCwL4b.jpg",
+    "genres": ["science-fiction", "adventure"],
+    "moods": ["warm", "transporting", "funny"],
+    "pace": "balanced",
+    "audiences": ["solo", "partner", "friends", "family"],
+    "cast": [{ "id": "person-matt-damon", "name": "Matt Damon" }],
+    "content": { "certification": "PG-13", "kidsSafe": false },
+    "availability": [
+      { "region": "US", "providerId": "max", "providerName": "Max", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
+      { "region": "US", "providerId": "prime", "providerName": "Prime Video", "monetizationType": "rent", "checkedAt": "2026-09-16T00:00:00Z" }
+    ],
+    "source": { "provider": "cinematch-fixture", "externalId": "the-martian-2015" }
+  }
+]
