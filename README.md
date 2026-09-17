@@ -55,17 +55,19 @@ npm --version
 For a new checkout on macOS, Windows, or Linux:
 
 ```bash
-git clone --branch production-foundation https://github.com/jarnld/cinematch.git
+git clone https://github.com/jarnld/cinematch.git
 cd cinematch
+npm run check
 npm run dev
 ```
 
-If you cloned the repository before the `production-foundation` branch was published, update the existing checkout instead:
+If you already have a checkout, update it instead:
 
 ```bash
 git fetch origin
-git switch production-foundation
+git switch main
 git pull
+npm run check
 npm run dev
 ```
 
@@ -75,7 +77,7 @@ No `npm install` step is currently required because this version has no third-pa
 
 ### Easiest Windows setup
 
-The earlier `System32` message meant Command Prompt was looking in the Windows system folder rather than in the CineMatch repository. After cloning the repository and switching to `production-foundation`, open the `cinematch` folder in File Explorer and double-click `start-cinematch.cmd`.
+The earlier `System32` message meant Command Prompt was looking in the Windows system folder rather than in the CineMatch repository. After cloning the repository, open the `cinematch` folder in File Explorer and double-click `start-cinematch.cmd`.
 
 That launcher changes to the correct folder automatically, starts the service, and leaves a readable error message on screen if Node.js is missing. When it says CineMatch is ready, open [http://127.0.0.1:3000](http://127.0.0.1:3000). Keep the launcher window open while using the app.
 
@@ -135,6 +137,22 @@ TMDB watch-provider data is supplied through its JustWatch partnership and requi
 
 After updating to a version that adds new catalog fields, run `npm run catalog:sync` again before starting the service. The adaptive actor round uses TMDB profile imagery when available and falls back to initials for an older catalog snapshot. The `/health` response reports `castProfiles`; a refreshed TMDB catalog should report a number greater than zero.
 
-## Repository setup
+## Collaborative development
 
-This folder is intentionally ready to become its own Git repository. Keep secrets in environment variables and never commit `.env` files.
+The shared, working application lives on `main`. Before starting work:
+
+```bash
+git switch main
+git pull
+git switch -c your-feature-name
+```
+
+Run `npm run check` before sharing a change. Commit the change on the feature branch and push it to GitHub for review:
+
+```bash
+git add .
+git commit -m "Describe the change"
+git push -u origin your-feature-name
+```
+
+Keep secrets in environment variables and never commit `.env` files, API keys, Read Access Tokens, or `data/movies.catalog.json`. Each collaborator should create their own TMDB credential and run `npm run catalog:sync` locally. The six-film fixture catalog remains in Git so the app and all automated tests work immediately after cloning, even without TMDB access.
