@@ -139,6 +139,17 @@ function normalizedMatchScore(total) {
   return Math.max(45, Math.min(98, Math.round((total / 106) * 100)));
 }
 
+function summarizeMovie(movie) {
+  return {
+    id: movie.id,
+    title: movie.title,
+    year: movie.year,
+    runtimeMinutes: movie.runtimeMinutes,
+    genres: movie.genres,
+    posterUrl: movie.posterUrl
+  };
+}
+
 export function recommend(input, catalog = defaultCatalog) {
   const request = validateRequest(input);
   const eligibleMovies = filterMovies(request, catalog);
@@ -162,6 +173,7 @@ export function recommend(input, catalog = defaultCatalog) {
     sessionId: request.sessionId ?? randomUUID(),
     rankingVersion: RANKING_VERSION,
     movieId: winner.movie.id,
+    movie: summarizeMovie(winner.movie),
     matchScore: normalizedMatchScore(winner.total),
     reason: explanation.reason,
     matchSignals: explanation.signals,

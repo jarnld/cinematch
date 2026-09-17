@@ -4,7 +4,7 @@
   "title": "Recommendation response",
   "type": "object",
   "additionalProperties": false,
-  "required": ["sessionId", "rankingVersion", "movieId", "matchScore", "reason", "matchSignals", "backups"],
+  "required": ["sessionId", "rankingVersion", "movieId", "movie", "matchScore", "reason", "matchSignals", "backups"],
   "properties": {
     "sessionId": {
       "type": "string",
@@ -17,6 +17,9 @@
     "movieId": {
       "type": "string",
       "minLength": 1
+    },
+    "movie": {
+      "$ref": "#/$defs/movieSummary"
     },
     "matchScore": {
       "type": "integer",
@@ -54,6 +57,25 @@
           "movieId": { "type": "string", "minLength": 1 },
           "reason": { "type": "string", "minLength": 1, "maxLength": 240 }
         }
+      }
+    }
+  },
+  "$defs": {
+    "movieSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "year", "runtimeMinutes", "genres", "posterUrl"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "year": { "type": "integer" },
+        "runtimeMinutes": { "type": "integer", "minimum": 1 },
+        "genres": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "posterUrl": { "type": "string", "format": "uri" }
       }
     }
   }

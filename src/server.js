@@ -1,12 +1,28 @@
 import { createServer } from "node:http";
+import { readFileSync } from "node:fs";
 import { movies } from "./catalog.js";
 import { recommend, RecommendationError, RANKING_VERSION } from "./recommendation-engine.js";
 
 const MAX_BODY_BYTES = 100_000;
+const staticAssets = new Map([
+  ["/", { contentType: "text/html; charset=utf-8", body: readFileSync(new URL("../dist/index.html", import.meta.url)) }],
+  ["/index.html", { contentType: "text/html; charset=utf-8", body: readFileSync(new URL("../dist/index.html", import.meta.url)) }],
+  ["/app.js", { contentType: "text/javascript; charset=utf-8", body: readFileSync(new URL("../dist/app.js", import.meta.url)) }],
+  ["/styles.css", { contentType: "text/css; charset=utf-8", body: readFileSync(new URL("../dist/styles.css", import.meta.url)) }],
+  ["/assets/cinematic-night.png", { contentType: "image/png", body: readFileSync(new URL("../dist/assets/cinematic-night.png", import.meta.url)) }]
+]);
 
 function sendJson(response, status, body) {
   response.writeHead(status, { "content-type": "application/json; charset=utf-8" });
   response.end(JSON.stringify(body));
+}
+
+function sendStatic(response, asset) {
+  response.writeHead(200, {
+    "content-type": asset.contentType,
+    "cache-control": "no-store"
+  });
+  response.end(asset.body);
 }
 
 async function readJson(request) {
@@ -27,6 +43,11 @@ async function readJson(request) {
 
 export function createRecommendationServer() {
   return createServer(async (request, response) => {
+    if (request.method === "GET" && staticAssets.has(request.url)) {
+      sendStatic(response, staticAssets.get(request.url));
+      return;
+    }
+
     if (request.method === "GET" && request.url === "/health") {
       sendJson(response, 200, {
         service: "cinematch-recommendation-service",
@@ -57,6 +78,6 @@ export function createRecommendationServer() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const port = Number(process.env.PORT ?? 3000);
   createRecommendationServer().listen(port, "127.0.0.1", () => {
-    console.log(`CineMatch recommendation service listening on http://127.0.0.1:${port}`);
+    console.log(`CineMatch is running at http://127.0.0.1:${port}`);
   });
 }

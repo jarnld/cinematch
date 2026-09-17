@@ -28,6 +28,17 @@ test("reports service health", async () => {
   });
 });
 
+test("serves the CineMatch interface", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(baseUrl);
+    const body = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type"), /text\/html/);
+    assert.match(body, /CineMatch/);
+  });
+});
+
 test("serves a recommendation through the API", async () => {
   await withServer(async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/recommend`, {
@@ -48,6 +59,7 @@ test("serves a recommendation through the API", async () => {
     assert.equal(response.status, 200);
     assert.equal(body.rankingVersion, "deterministic-v1");
     assert.equal(typeof body.movieId, "string");
+    assert.equal(body.movie.id, body.movieId);
   });
 });
 

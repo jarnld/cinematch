@@ -42,16 +42,22 @@ The model should never invent the catalog or availability. Give it tools such as
 
 The production recommendation service is being designed in [`docs/production-foundation.md`](docs/production-foundation.md). Its API contracts live in [`schemas/`](schemas/) and separate hard constraints (runtime, region, availability, and safety) from softer taste signals (mood, pace, company, and cast).
 
-### Local recommendation service
+### Run CineMatch locally
 
-The first deterministic service is implemented without third-party dependencies. It uses a six-film fixture catalog to exercise real filtering and ranking behavior; its availability records are test fixtures and must not be presented as current streaming data.
+You need Node.js 20 or newer. Installing Node.js also installs the `npm` command used below. After installing it, open Terminal and run:
 
 ```bash
-npm test
-npm run start:service
+cd /Users/jackarnold/Documents/Codex/2026-09-16/i-w/work/cinematch
+npm run dev
 ```
 
-The service exposes `GET /health` and `POST /api/recommend`. The current static prototype is not connected to this endpoint yet.
+Then open [http://127.0.0.1:3000](http://127.0.0.1:3000) in a browser. Keep the Terminal window open while using CineMatch; press `Control-C` there to stop it.
+
+No `npm install` step is currently required because this version has no third-party code dependencies. Run `npm test` whenever you want to check the recommendation rules.
+
+The same local process serves both the interface and the API: `GET /health` reports service status and `POST /api/recommend` returns recommendations. The interface now calls this endpoint instead of ranking films in the browser.
+
+The service uses a six-film fixture catalog to exercise real filtering and ranking behavior. Its availability records are test fixtures and must not be presented as current streaming data.
 
 ## Repository setup
 

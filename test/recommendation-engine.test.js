@@ -20,6 +20,8 @@ test("returns a deterministic recommendation with backups", () => {
   assert.equal(result.sessionId, "test-session");
   assert.equal(result.rankingVersion, "deterministic-v1");
   assert.equal(result.movieId, "mitchells-vs-machines-2021");
+  assert.equal(result.movie.id, result.movieId);
+  assert.equal(result.movie.title, "The Mitchells vs. the Machines");
   assert.ok(result.matchScore >= 0 && result.matchScore <= 100);
   assert.ok(result.backups.length <= 2);
 });

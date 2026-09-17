@@ -6,7 +6,7 @@ const questions = [
     key: "vibe", eyebrow: "ROUND 02 · SET THE MOOD", title: "What should it feel like?", help: "Choose the feeling you want when the credits roll.",
     options: [
       ["warm", "Warm", "Hopeful and human"], ["tense", "Tense", "Keep me guessing"],
-      ["funny", "Funny", "Smart over silly"], ["wonder", "Transporting", "Take me somewhere else"],
+      ["funny", "Funny", "Smart over silly"], ["transporting", "Transporting", "Take me somewhere else"],
       ["dark", "Dark", "Let it get under my skin"], ["romantic", "Romantic", "Earn the chemistry"]
     ]
   },
@@ -29,16 +29,16 @@ const questions = [
   {
     key: "actor", type: "actors", eyebrow: "ROUND 05 · CAST YOUR VOTE", title: "Who would you follow anywhere?", help: "Pick a face. We’ll read between the lines.",
     options: [
-      ["amy", "Amy Adams", "Emotional precision", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amy_Adams_.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Amy_Adams_.jpg"],
-      ["daniel", "Daniel Craig", "Charisma with an edge", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Daniel_Craig_in_2021.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Daniel_Craig_in_2021.jpg"],
-      ["issa", "Issa Rae", "Wit and warmth", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Issa_Rae_(cropped).jpg?width=600", "https://commons.wikimedia.org/wiki/File:Issa_Rae_(cropped).jpg"],
-      ["pedro", "Pedro Pascal", "Heart and humor", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pedro_Pascal_on_street.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Pedro_Pascal_on_street.jpg"],
-      ["andy", "Andy Samberg", "Commitment to the bit", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg"],
-      ["matt", "Matt Damon", "Competence under pressure", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Matt_Damon-60048.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Matt_Damon-60048.jpg"]
+      ["person-amy-adams", "Amy Adams", "Emotional precision", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amy_Adams_.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Amy_Adams_.jpg"],
+      ["person-daniel-craig", "Daniel Craig", "Charisma with an edge", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Daniel_Craig_in_2021.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Daniel_Craig_in_2021.jpg"],
+      ["person-issa-rae", "Issa Rae", "Wit and warmth", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Issa_Rae_(cropped).jpg?width=600", "https://commons.wikimedia.org/wiki/File:Issa_Rae_(cropped).jpg"],
+      ["person-pedro-pascal", "Pedro Pascal", "Heart and humor", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pedro_Pascal_on_street.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Pedro_Pascal_on_street.jpg"],
+      ["person-andy-samberg", "Andy Samberg", "Commitment to the bit", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg"],
+      ["person-matt-damon", "Matt Damon", "Competence under pressure", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Matt_Damon-60048.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Matt_Damon-60048.jpg"]
     ]
   },
   {
-    key: "service", eyebrow: "ROUND 06 · WHERE YOU WATCH", title: "Which service comes first?", help: "We’ll connect live regional availability next.",
+    key: "service", eyebrow: "ROUND 06 · WHERE YOU WATCH", title: "Which service comes first?", help: "Choose a service to filter the demo catalog.",
     options: [
       ["netflix", "Netflix", "Your first stop"], ["max", "Max", "Prestige and blockbusters"],
       ["prime", "Prime Video", "Included or rentable"], ["hulu", "Hulu", "Movies and originals"],
@@ -47,20 +47,10 @@ const questions = [
   }
 ];
 
-const movies = [
-  { title: "Arrival", year: 2016, minutes: 116, runtime: "1h 56m", genre: "Sci-fi / Drama", poster: "https://image.tmdb.org/t/p/w500/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg", tags: ["thoughtful", "emotional", "slow burn"], fit: { vibe:"wonder", pace:"slow", company:"date", actor:"amy" }, reason: "Thoughtful without feeling like homework—big ideas, an emotional core, and exactly the slow-burn wonder you asked for." },
-  { title: "Knives Out", year: 2019, minutes: 130, runtime: "2h 10m", genre: "Mystery / Comedy", poster: "https://image.tmdb.org/t/p/w500/pThyQovXQrw2m0s9x82twj48Jq4.jpg", tags: ["witty", "twisty", "ensemble"], fit: { vibe:"tense", pace:"balanced", company:"friends", actor:"daniel" }, reason: "A sharp, playful mystery with enough momentum for a group and enough detail to reward everyone paying attention." },
-  { title: "The Mitchells vs. the Machines", year: 2021, minutes: 114, runtime: "1h 54m", genre: "Animation / Comedy", poster: "https://image.tmdb.org/t/p/w500/mI2Di7HmskQQ34kz0iau6J1vr70.jpg", tags: ["joyful", "inventive", "family"], fit: { vibe:"funny", pace:"fast", company:"kids", actor:"issa" }, reason: "Inventive, genuinely funny, and big-hearted—a family crowd-pleaser that never feels like the safe option." },
-  { title: "The Unbearable Weight of Massive Talent", year: 2022, minutes: 107, runtime: "1h 47m", genre: "Action / Comedy", poster: "https://image.tmdb.org/t/p/w500/aqhLeieyTpTUKPOfZ3jzo2La0Mq.jpg", tags: ["self-aware", "fast", "buddy comedy"], fit: { vibe:"funny", pace:"fast", company:"friends", actor:"pedro" }, reason: "A fast, charming buddy comedy with just enough action and a wonderfully game performance at its center." },
-  { title: "Palm Springs", year: 2020, minutes: 90, runtime: "1h 30m", genre: "Comedy / Romance", poster: "https://image.tmdb.org/t/p/w500/yf5IuMW6GHghu39kxA0oFx7Bxmj.jpg", tags: ["romantic", "clever", "breezy"], fit: { vibe:"romantic", pace:"balanced", company:"date", actor:"andy" }, reason: "Short, clever, and sneakily sincere—the rare date-night comedy that gives you something to talk about afterward." },
-  { title: "The Martian", year: 2015, minutes: 144, runtime: "2h 24m", genre: "Sci-fi / Adventure", poster: "https://image.tmdb.org/t/p/w500/5BHuvQ6p9kfc091Z8RiFNhCwL4b.jpg", tags: ["hopeful", "smart", "adventure"], fit: { vibe:"warm", pace:"balanced", company:"family", actor:"matt" }, reason: "Optimistic, funny, and satisfyingly smart—an expansive adventure powered by competence instead of cynicism." }
-];
-
 let current = 0;
 let answers = {};
-let shownTitles = [];
+let shownMovieIds = [];
 let runtimeMinutes = 115;
-let loadingTimer;
 let lastMovie = null;
 
 const landingView = document.querySelector("#landingView");
@@ -74,7 +64,7 @@ const questionExtra = document.querySelector("#questionExtra");
 function startQuiz() {
   current = 0;
   answers = {};
-  shownTitles = [];
+  shownMovieIds = [];
   runtimeMinutes = 115;
   lastMovie = null;
   landingView.hidden = true;
@@ -163,32 +153,7 @@ function selectAnswer(key, value) {
   }, 180);
 }
 
-function scoreMovie(movie) {
-  const runtimeDifference = Math.abs((answers.runtime || 115) - movie.minutes);
-  let score = runtimeDifference <= 10 ? 3 : runtimeDifference <= 25 ? 1 : -2;
-  for (const [key, value] of Object.entries(movie.fit)) {
-    if (answers[key] === value) score += key === "actor" ? 3 : 2;
-    if (answers[key] === "any" || answers[key] === "surprise") score += 1;
-  }
-  const refinement = answers.refinement;
-  if (refinement === "lighter" && (["warm", "funny", "romantic"].includes(movie.fit.vibe) || movie.tags.some(tag => ["joyful", "hopeful", "breezy"].includes(tag)))) score += 5;
-  if (refinement === "tenser" && (movie.fit.vibe === "tense" || movie.tags.some(tag => ["twisty", "dark"].includes(tag)))) score += 5;
-  if (refinement === "faster" && (movie.fit.pace === "fast" || movie.minutes <= 110)) score += 5;
-  if (refinement === "slower" && (movie.fit.pace === "slow" || movie.fit.pace === "meditative" || movie.tags.includes("thoughtful"))) score += 5;
-  if (refinement === "shorter" && lastMovie && movie.minutes < lastMovie.minutes) score += Math.min(6, Math.ceil((lastMovie.minutes - movie.minutes) / 10));
-  if (refinement === "wildcard" && movie.fit.actor !== answers.actor && movie.fit.vibe !== answers.vibe) score += 5;
-  return score;
-}
-
-function chooseMovie() {
-  const available = movies.filter(movie => !shownTitles.includes(movie.title));
-  const pool = available.length ? available : movies;
-  if (!available.length) shownTitles = [];
-  return [...pool].sort((a, b) => scoreMovie(b) - scoreMovie(a))[0];
-}
-
-function beginMatching() {
-  window.clearTimeout(loadingTimer);
+async function beginMatching() {
   landingView.hidden = true;
   quizView.hidden = true;
   refineView.hidden = true;
@@ -197,20 +162,49 @@ function beginMatching() {
   document.querySelector(".loading-note").textContent = answers.refinement ? "Applying your new signal without losing the first six." : "Balancing time, mood, pace, and company.";
   document.querySelector("#restartTop").style.visibility = "hidden";
   window.scrollTo({ top: 0, behavior: "smooth" });
-  loadingTimer = window.setTimeout(showResult, 1450);
+
+  const request = {
+    region: "US",
+    runtimeMaxMinutes: answers.runtime || runtimeMinutes,
+    moods: [answers.vibe],
+    pace: answers.pace,
+    company: answers.company,
+    actorIds: answers.actor ? [answers.actor] : [],
+    serviceIds: answers.service === "any" ? [] : [answers.service],
+    kidsPresent: answers.company === "kids",
+    excludedMovieIds: shownMovieIds,
+    previousMovieId: lastMovie?.id,
+    refinement: answers.refinement
+  };
+
+  try {
+    const [response] = await Promise.all([
+      fetch("/api/recommend", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(request)
+      }),
+      new Promise((resolve) => window.setTimeout(resolve, 700))
+    ]);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error?.message || "Recommendation failed.");
+    showResult(result);
+  } catch (error) {
+    document.querySelector(".loading-note").textContent = `${error.message} Restart and try a broader set of choices.`;
+    document.querySelector("#restartTop").style.visibility = "visible";
+  }
 }
 
-function showResult() {
-  const movie = chooseMovie();
-  shownTitles.push(movie.title);
-  const score = Math.max(79, Math.min(98, 86 + scoreMovie(movie)));
+function showResult(result) {
+  const movie = result.movie;
+  shownMovieIds.push(movie.id);
   document.querySelector("#movieTitle").textContent = movie.title;
-  document.querySelector("#movieMeta").textContent = `${movie.year} · ${movie.runtime} · ${movie.genre}`;
-  document.querySelector("#movieReason").textContent = movie.reason;
-  document.querySelector("#matchScore").textContent = score;
-  document.querySelector("#resultTags").innerHTML = movie.tags.map(tag => `<span>${tag}</span>`).join("");
+  document.querySelector("#movieMeta").textContent = `${movie.year} · ${formatRuntime(movie.runtimeMinutes)} · ${movie.genres.join(" / ")}`;
+  document.querySelector("#movieReason").textContent = result.reason;
+  document.querySelector("#matchScore").textContent = result.matchScore;
+  document.querySelector("#resultTags").innerHTML = result.matchSignals.slice(0, 3).map(tag => `<span>${tag}</span>`).join("");
   const poster = document.querySelector("#moviePoster");
-  poster.src = movie.poster;
+  poster.src = movie.posterUrl;
   poster.alt = `${movie.title} movie poster`;
   lastMovie = movie;
   loadingView.hidden = true;
@@ -218,6 +212,12 @@ function showResult() {
   resultView.hidden = false;
   document.querySelector("#restartTop").style.visibility = "visible";
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function formatRuntime(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return hours ? `${hours}h ${remainder}m` : `${remainder}m`;
 }
 
 function showRefinement() {
@@ -231,10 +231,9 @@ function showRefinement() {
 }
 
 function restart() {
-  window.clearTimeout(loadingTimer);
   current = 0;
   answers = {};
-  shownTitles = [];
+  shownMovieIds = [];
   runtimeMinutes = 115;
   lastMovie = null;
   quizView.hidden = true;
@@ -260,7 +259,7 @@ document.querySelectorAll(".refine-card").forEach(button => button.addEventListe
   beginMatching();
 }));
 document.querySelector("#watchButton").addEventListener("click", () => {
-  document.querySelector("#availabilityNote").textContent = "Next: connect TMDB watch providers and attribute JustWatch for regional availability.";
+  document.querySelector("#availabilityNote").textContent = "Live availability is not connected yet. Current service values are test fixtures.";
 });
 
 restart();
