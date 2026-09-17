@@ -27,6 +27,12 @@ CineMatch asks a small number of questions and returns one movie the user can ac
 
 The service must always be able to return the deterministic top result when the AI step is unavailable.
 
+## Adaptive questionnaire
+
+The questionnaire is a narrowing conversation, not six isolated filters. After runtime, mood, pace, and company are known, the service ranks streaming services by the remaining matching movies. After a service is chosen, it ranks actors from that narrower candidate pool. The final recommendation then scores the selected actor together with every earlier answer.
+
+Adaptive choices are generated from verified catalog records only. They never create a movie, person, or provider that is absent from the active catalog. If the adaptive endpoint is unavailable, the interface retains static fallback choices so the local experience remains usable.
+
 ## Hard constraints
 
 These rules remove a movie from consideration:

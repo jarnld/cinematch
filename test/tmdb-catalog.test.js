@@ -14,7 +14,7 @@ const tmdbMovie = {
     { id: 878, name: "Science Fiction" },
     { id: 35, name: "Comedy" }
   ],
-  credits: { cast: [{ id: 1625558, name: "Stephanie Hsu" }] },
+  credits: { cast: [{ id: 1625558, name: "Stephanie Hsu", profile_path: "/person.jpg" }] },
   release_dates: {
     results: [{ iso_3166_1: "US", release_dates: [{ type: 3, certification: "R" }] }]
   },
@@ -39,6 +39,7 @@ test("normalizes TMDB facts into the CineMatch catalog contract", () => {
   assert.equal(movie.pace, "fast");
   assert.equal(movie.content.kidsSafe, false);
   assert.deepEqual(movie.availability.map((entry) => entry.providerId), ["max", "prime"]);
+  assert.equal(movie.cast[0].profileUrl, "https://image.tmdb.org/t/p/w500/person.jpg");
   assert.equal(movie.source.provider, "tmdb");
 });
 

@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { catalogSource, movies } from "./catalog.js";
 import { recommend, RecommendationError, RANKING_VERSION } from "./recommendation-engine.js";
+import { rankActorOptions, rankServiceOptions } from "./adaptive-options.js";
 
 const MAX_BODY_BYTES = 100_000;
 const staticAssets = new Map([
@@ -70,6 +71,28 @@ export function createRecommendationServer({ catalog = movies, source = catalogS
         sendJson(response, 500, { error: { code: "INTERNAL_ERROR", message: "Recommendation failed." } });
       }
       return;
+    }
+
+    if (request.method === "POST" && request.url === "/api/options") {
+      try {
+        const body = await readJson(request);
+        if (body.kind === "services") {
+          sendJson(response, 200, { kind: body.kind, ...rankServiceOptions(body.request, catalog) });
+          return;
+        }
+        if (body.kind === "actors") {
+          sendJson(response, 200, { kind: body.kind, ...rankActorOptions(body.request, catalog) });
+          return;
+        }
+        throw new RecommendationError("Option kind must be services or actors.", "INVALID_OPTION_KIND");
+      } catch (error) {
+        if (error instanceof RecommendationError) {
+          sendJson(response, error.status, { error: { code: error.code, message: error.message } });
+          return;
+        }
+        sendJson(response, 500, { error: { code: "INTERNAL_ERROR", message: "Adaptive options failed." } });
+        return;
+      }
     }
 
     sendJson(response, 404, { error: { code: "NOT_FOUND", message: "Route not found." } });

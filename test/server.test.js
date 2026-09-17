@@ -78,3 +78,30 @@ test("returns structured validation errors", async () => {
     assert.equal(body.error.code, "INVALID_REGION");
   });
 });
+
+test("builds adaptive actor choices from earlier answers", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/options`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        kind: "actors",
+        request: {
+          region: "US",
+          runtimeMaxMinutes: 150,
+          moods: ["tense"],
+          pace: "balanced",
+          company: "friends",
+          actorIds: [],
+          serviceIds: ["netflix"]
+        }
+      })
+    });
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.kind, "actors");
+    assert.ok(body.candidateMovieCount > 0);
+    assert.ok(body.options.some((option) => option.value === "person-daniel-craig"));
+  });
+});

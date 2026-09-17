@@ -134,7 +134,8 @@ export function normalizeTmdbMovie(details, { region = "US", checkedAt = new Dat
     audiences: deriveAudiences(genres, kidsSafe),
     cast: (details.credits?.cast ?? []).slice(0, 10).map((person) => ({
       id: castIdOverrides.get(person.name) ?? `tmdb-person-${person.id}`,
-      name: person.name
+      name: person.name,
+      ...(person.profile_path ? { profileUrl: `https://image.tmdb.org/t/p/w500${person.profile_path}` } : {})
     })),
     content: { certification, kidsSafe },
     availability,

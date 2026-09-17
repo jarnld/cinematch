@@ -27,7 +27,15 @@ const questions = [
     ]
   },
   {
-    key: "actor", type: "actors", eyebrow: "ROUND 05 · CAST YOUR VOTE", title: "Who would you follow anywhere?", help: "Pick a face. We’ll read between the lines.",
+    key: "service", type: "services", eyebrow: "ROUND 05 · WHERE YOU WATCH", title: "Where should we look?", help: "These services are ranked from the movies still matching your night.",
+    options: [
+      ["netflix", "Netflix", "Your first stop"], ["max", "Max", "Prestige and blockbusters"],
+      ["prime", "Prime Video", "Included or rentable"], ["hulu", "Hulu", "Movies and originals"],
+      ["disney", "Disney+", "Franchises and family"], ["any", "Any service", "Best match wins"]
+    ]
+  },
+  {
+    key: "actor", type: "actors", eyebrow: "ROUND 06 · CAST YOUR VOTE", title: "Who fits this version of tonight?", help: "The cast below comes from movies matching your first five answers.",
     options: [
       ["person-amy-adams", "Amy Adams", "Emotional precision", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amy_Adams_.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Amy_Adams_.jpg"],
       ["person-daniel-craig", "Daniel Craig", "Charisma with an edge", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Daniel_Craig_in_2021.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Daniel_Craig_in_2021.jpg"],
@@ -35,14 +43,6 @@ const questions = [
       ["person-pedro-pascal", "Pedro Pascal", "Heart and humor", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pedro_Pascal_on_street.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Pedro_Pascal_on_street.jpg"],
       ["person-andy-samberg", "Andy Samberg", "Commitment to the bit", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg"],
       ["person-matt-damon", "Matt Damon", "Competence under pressure", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Matt_Damon-60048.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Matt_Damon-60048.jpg"]
-    ]
-  },
-  {
-    key: "service", eyebrow: "ROUND 06 · WHERE YOU WATCH", title: "Which service comes first?", help: "Choose a service to filter the demo catalog.",
-    options: [
-      ["netflix", "Netflix", "Your first stop"], ["max", "Max", "Prestige and blockbusters"],
-      ["prime", "Prime Video", "Included or rentable"], ["hulu", "Hulu", "Movies and originals"],
-      ["disney", "Disney+", "Franchises and family"], ["any", "Any service", "Best match wins"]
     ]
   }
 ];
@@ -52,6 +52,7 @@ let answers = {};
 let shownMovieIds = [];
 let runtimeMinutes = 115;
 let lastMovie = null;
+let renderSequence = 0;
 
 const landingView = document.querySelector("#landingView");
 const quizView = document.querySelector("#quizView");
@@ -76,7 +77,76 @@ function startQuiz() {
   renderQuestion();
 }
 
-function renderQuestion() {
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;"
+  })[character]);
+}
+
+function safeImageUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function recommendationRequest() {
+  return {
+    region: "US",
+    runtimeMaxMinutes: answers.runtime || runtimeMinutes,
+    moods: [answers.vibe],
+    pace: answers.pace,
+    company: answers.company,
+    actorIds: answers.actor ? [answers.actor] : [],
+    serviceIds: answers.service && answers.service !== "any" ? [answers.service] : [],
+    kidsPresent: answers.company === "kids",
+    excludedMovieIds: shownMovieIds,
+    previousMovieId: lastMovie?.id,
+    refinement: answers.refinement
+  };
+}
+
+async function loadAdaptiveOptions(kind) {
+  const response = await fetch("/api/options", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ kind, request: recommendationRequest() })
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error?.message || "Could not adapt this question.");
+  return result.options.map((option) => [option.value, option.title, option.subtitle, option.image]);
+}
+
+function renderOptionCards(question, options, adaptive) {
+  if (question.type === "actors") answerGrid.classList.add("actor-grid");
+  answerGrid.innerHTML = options.map(([value, title, subtitle, image], index) => {
+    const imageUrl = safeImageUrl(image);
+    const initials = title.split(/\s+/).map((part) => part[0]).slice(0, 2).join("");
+    return `
+      <button class="answer-card${question.type === "actors" ? " actor-card" : ""}${answers[question.key] === value ? " selected" : ""}" data-value="${escapeHtml(value)}" type="button">
+        ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(title)}" loading="lazy" />` : question.type === "actors" ? `<span class="actor-placeholder" aria-hidden="true">${escapeHtml(initials)}</span>` : ""}
+        <span class="answer-number">${String(index + 1).padStart(2, "0")}</span>
+        <span class="answer-copy"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(subtitle)}</span></span>
+      </button>`;
+  }).join("");
+  answerGrid.querySelectorAll(".answer-card").forEach(button => button.addEventListener("click", () => selectAnswer(question.key, button.dataset.value)));
+
+  if (question.type === "actors" && !adaptive) {
+    questionExtra.innerHTML = `<details class="photo-credits"><summary>Portrait credits</summary><p>
+      <a href="${question.options[0][4]}" target="_blank" rel="noreferrer">Amy Adams</a> ·
+      <a href="${question.options[1][4]}" target="_blank" rel="noreferrer">Daniel Craig / Royal Navy</a> ·
+      <a href="${question.options[2][4]}" target="_blank" rel="noreferrer">Issa Rae / Bam0822</a> ·
+      <a href="${question.options[3][4]}" target="_blank" rel="noreferrer">Pedro Pascal / Allisonjshaw</a> ·
+      <a href="${question.options[4][4]}" target="_blank" rel="noreferrer">Andy Samberg / David Shankbone</a> ·
+      <a href="${question.options[5][4]}" target="_blank" rel="noreferrer">Matt Damon / Harald Krichel</a>. Wikimedia Commons; Creative Commons or OGL licenses listed at each source.
+    </p></details>`;
+  }
+}
+
+async function renderQuestion() {
+  const sequence = ++renderSequence;
   const q = questions[current];
   const percent = Math.round(((current + 1) / questions.length) * 100);
   document.querySelector("#questionCounter").textContent = `${String(current + 1).padStart(2, "0")} / ${String(questions.length).padStart(2, "0")}`;
@@ -93,25 +163,21 @@ function renderQuestion() {
     return;
   }
 
-  if (q.type === "actors") answerGrid.classList.add("actor-grid");
-  answerGrid.innerHTML = q.options.map(([value, title, subtitle, image], index) => `
-    <button class="answer-card${q.type === "actors" ? " actor-card" : ""}${answers[q.key] === value ? " selected" : ""}" data-value="${value}" type="button">
-      ${image ? `<img src="${image}" alt="${title}" loading="lazy" />` : ""}
-      <span class="answer-number">0${index + 1}</span>
-      <span class="answer-copy"><strong>${title}</strong><span>${subtitle}</span></span>
-    </button>`).join("");
-  answerGrid.querySelectorAll(".answer-card").forEach(button => button.addEventListener("click", () => selectAnswer(q.key, button.dataset.value)));
-
-  if (q.type === "actors") {
-    questionExtra.innerHTML = `<details class="photo-credits"><summary>Portrait credits</summary><p>
-      <a href="${q.options[0][4]}" target="_blank" rel="noreferrer">Amy Adams</a> ·
-      <a href="${q.options[1][4]}" target="_blank" rel="noreferrer">Daniel Craig / Royal Navy</a> ·
-      <a href="${q.options[2][4]}" target="_blank" rel="noreferrer">Issa Rae / Bam0822</a> ·
-      <a href="${q.options[3][4]}" target="_blank" rel="noreferrer">Pedro Pascal / Allisonjshaw</a> ·
-      <a href="${q.options[4][4]}" target="_blank" rel="noreferrer">Andy Samberg / David Shankbone</a> ·
-      <a href="${q.options[5][4]}" target="_blank" rel="noreferrer">Matt Damon / Harald Krichel</a>. Wikimedia Commons; Creative Commons or OGL licenses listed at each source.
-    </p></details>`;
+  if (["services", "actors"].includes(q.type)) {
+    answerGrid.innerHTML = `<p class="options-loading">Rebuilding this round from your answers…</p>`;
+    try {
+      const options = await loadAdaptiveOptions(q.type);
+      if (sequence !== renderSequence || q !== questions[current]) return;
+      if (options.length > 0) {
+        renderOptionCards(q, options, true);
+        return;
+      }
+    } catch (error) {
+      console.warn(error);
+    }
   }
+
+  renderOptionCards(q, q.options, false);
 }
 
 function renderRuntimeSlider() {
@@ -163,19 +229,7 @@ async function beginMatching() {
   document.querySelector("#restartTop").style.visibility = "hidden";
   window.scrollTo({ top: 0, behavior: "smooth" });
 
-  const request = {
-    region: "US",
-    runtimeMaxMinutes: answers.runtime || runtimeMinutes,
-    moods: [answers.vibe],
-    pace: answers.pace,
-    company: answers.company,
-    actorIds: answers.actor ? [answers.actor] : [],
-    serviceIds: answers.service === "any" ? [] : [answers.service],
-    kidsPresent: answers.company === "kids",
-    excludedMovieIds: shownMovieIds,
-    previousMovieId: lastMovie?.id,
-    refinement: answers.refinement
-  };
+  const request = recommendationRequest();
 
   try {
     const [response] = await Promise.all([

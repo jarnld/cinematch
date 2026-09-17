@@ -12,6 +12,7 @@ CineMatch is a gamified movie concierge: answer six quick questions and get one 
 - A dedicated matching transition and real TMDB poster imagery
 - Reroll with the existing answers, plus a full restart flow
 - A six-choice bonus round that refines each reroll without discarding the original answers
+- Adaptive service and cast rounds generated from the answers already given
 - Accessible keyboard controls and reduced-motion support
 
 Open `dist/index.html` or serve `dist/` with any static web server.
@@ -131,6 +132,8 @@ By default the importer requests up to 40 popular movies with watch options in t
 You can adjust a local import with `TMDB_REGION`, `TMDB_PAGES`, and `TMDB_MAX_MOVIES`. The site reads the generated file only when the server starts, so restart `npm run dev` after syncing. Visit `/health` and look for `"catalogSource":"tmdb"` to confirm that the real catalog loaded.
 
 TMDB watch-provider data is supplied through its JustWatch partnership and requires JustWatch attribution. The current UI must retain the TMDB notice and will need visible JustWatch attribution before a catalog-backed version is published.
+
+After updating to a version that adds new catalog fields, run `npm run catalog:sync` again before starting the service. The adaptive actor round uses TMDB profile imagery when available and falls back to initials for an older catalog snapshot.
 
 ## Repository setup
 
