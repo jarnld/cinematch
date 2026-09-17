@@ -8,8 +8,8 @@ const outputPath = fileURLToPath(outputUrl);
 const temporaryPath = `${outputPath}.tmp-${process.pid}`;
 const token = process.env.TMDB_READ_TOKEN;
 const region = (process.env.TMDB_REGION ?? "US").toUpperCase();
-const pages = parsePositiveInteger(process.env.TMDB_PAGES, 2, "TMDB_PAGES");
-const maxMovies = parsePositiveInteger(process.env.TMDB_MAX_MOVIES, 40, "TMDB_MAX_MOVIES");
+const pages = parsePositiveInteger(process.env.TMDB_PAGES, 10, "TMDB_PAGES");
+const maxMovies = parsePositiveInteger(process.env.TMDB_MAX_MOVIES, 200, "TMDB_MAX_MOVIES");
 
 function parsePositiveInteger(value, fallback, name) {
   if (value === undefined) return fallback;
@@ -50,9 +50,11 @@ async function discoverMovieIds() {
       include_video: false,
       language: "en-US",
       page,
+      "primary_release_date.lte": new Date().toISOString().slice(0, 10),
       region,
       sort_by: "popularity.desc",
-      "vote_count.gte": 250,
+      "vote_average.gte": 5.5,
+      "vote_count.gte": 500,
       watch_region: region,
       with_watch_monetization_types: "flatrate|free|ads|rent|buy"
     });

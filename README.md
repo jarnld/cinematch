@@ -127,13 +127,13 @@ npm run check
 npm run dev
 ```
 
-By default the importer requests up to 40 popular movies with watch options in the United States and writes `data/movies.catalog.json`. That generated file is intentionally ignored by Git because provider availability changes over time. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
+By default the importer requests up to 200 well-established, currently released movies with watch options in the United States and writes `data/movies.catalog.json`. It intentionally does not download every movie in TMDB: the local recommendation engine works from a quality-controlled candidate pool that is large enough to offer variety and small enough to refresh quickly. That generated file is ignored by Git because provider availability changes over time. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
 
 You can adjust a local import with `TMDB_REGION`, `TMDB_PAGES`, and `TMDB_MAX_MOVIES`. The site reads the generated file only when the server starts, so restart `npm run dev` after syncing. Visit `/health` and look for `"catalogSource":"tmdb"` to confirm that the real catalog loaded.
 
 TMDB watch-provider data is supplied through its JustWatch partnership and requires JustWatch attribution. The current UI must retain the TMDB notice and will need visible JustWatch attribution before a catalog-backed version is published.
 
-After updating to a version that adds new catalog fields, run `npm run catalog:sync` again before starting the service. The adaptive actor round uses TMDB profile imagery when available and falls back to initials for an older catalog snapshot.
+After updating to a version that adds new catalog fields, run `npm run catalog:sync` again before starting the service. The adaptive actor round uses TMDB profile imagery when available and falls back to initials for an older catalog snapshot. The `/health` response reports `castProfiles`; a refreshed TMDB catalog should report a number greater than zero.
 
 ## Repository setup
 

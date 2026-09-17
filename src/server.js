@@ -55,7 +55,8 @@ export function createRecommendationServer({ catalog = movies, source = catalogS
         status: "ok",
         rankingVersion: RANKING_VERSION,
         catalogSize: catalog.length,
-        catalogSource: source
+        catalogSource: source,
+        castProfiles: catalog.flatMap((movie) => movie.cast).filter((person) => person.profileUrl).length
       });
       return;
     }

@@ -27,6 +27,7 @@ test("reports service health", async () => {
     assert.equal(body.status, "ok");
     assert.equal(body.catalogSize, 6);
     assert.equal(body.catalogSource, "fixture");
+    assert.equal(body.castProfiles, 0);
   });
 });
 
