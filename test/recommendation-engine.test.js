@@ -43,6 +43,13 @@ test("requires selected streaming service availability", () => {
   );
 });
 
+test("requires selected actors to appear in the recommended movie", () => {
+  const eligible = filterMovies({ ...baseRequest, actorIds: ["person-pedro-pascal"] }, fixtureMovies);
+
+  assert.deepEqual(eligible.map((movie) => movie.id), ["unbearable-weight-2022"]);
+  assert.ok(eligible[0].cast.some((person) => person.id === "person-pedro-pascal"));
+});
+
 test("keeps only kid-safe movies when children are present", () => {
   const eligible = filterMovies({ ...baseRequest, kidsPresent: true }, fixtureMovies);
 

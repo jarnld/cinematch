@@ -82,6 +82,11 @@ export function filterMovies(request, catalog = defaultCatalog) {
       if (!regionalAvailability.some((option) => requestedServices.has(option.providerId))) return false;
     }
 
+    if (request.actorIds.length > 0) {
+      const requestedActors = new Set(request.actorIds);
+      if (!movie.cast.some((person) => requestedActors.has(person.id))) return false;
+    }
+
     return true;
   });
 }
