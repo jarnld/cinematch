@@ -10,7 +10,7 @@
     "moods": ["transporting", "warm"],
     "pace": "slow",
     "audiences": ["solo", "date", "partner"],
-    "cast": [{ "id": "person-amy-adams", "name": "Amy Adams" }],
+    "cast": [{ "id": "person-amy-adams", "name": "Amy Adams", "profileUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amy_Adams_.jpg?width=600" }],
     "content": { "certification": "PG-13", "kidsSafe": false },
     "availability": [
       { "region": "US", "providerId": "prime", "providerName": "Prime Video", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
@@ -29,7 +29,7 @@
     "moods": ["tense", "funny"],
     "pace": "balanced",
     "audiences": ["date", "partner", "friends"],
-    "cast": [{ "id": "person-daniel-craig", "name": "Daniel Craig" }],
+    "cast": [{ "id": "person-daniel-craig", "name": "Daniel Craig", "profileUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Daniel_Craig_in_2021.jpg?width=600" }],
     "content": { "certification": "PG-13", "kidsSafe": false },
     "availability": [
       { "region": "US", "providerId": "netflix", "providerName": "Netflix", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
@@ -48,7 +48,7 @@
     "moods": ["funny", "warm"],
     "pace": "fast",
     "audiences": ["friends", "family", "kids"],
-    "cast": [{ "id": "person-issa-rae", "name": "Issa Rae" }],
+    "cast": [{ "id": "person-issa-rae", "name": "Issa Rae", "profileUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Issa_Rae_(cropped).jpg?width=600" }],
     "content": { "certification": "PG", "kidsSafe": true },
     "availability": [
       { "region": "US", "providerId": "netflix", "providerName": "Netflix", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" }
@@ -66,7 +66,7 @@
     "moods": ["funny", "warm"],
     "pace": "fast",
     "audiences": ["date", "partner", "friends"],
-    "cast": [{ "id": "person-pedro-pascal", "name": "Pedro Pascal" }],
+    "cast": [{ "id": "person-pedro-pascal", "name": "Pedro Pascal", "profileUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pedro_Pascal_on_street.jpg?width=600" }],
     "content": { "certification": "R", "kidsSafe": false },
     "availability": [
       { "region": "US", "providerId": "hulu", "providerName": "Hulu", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },
@@ -85,7 +85,7 @@
     "moods": ["romantic", "funny", "warm"],
     "pace": "balanced",
     "audiences": ["date", "partner", "friends"],
-    "cast": [{ "id": "person-andy-samberg", "name": "Andy Samberg" }],
+    "cast": [{ "id": "person-andy-samberg", "name": "Andy Samberg", "profileUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Andy-Samberg-David-Shankbone-2010-NYC-791x1024.jpg?width=600" }],
     "content": { "certification": "R", "kidsSafe": false },
     "availability": [
       { "region": "US", "providerId": "hulu", "providerName": "Hulu", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" }
@@ -103,7 +103,7 @@
     "moods": ["warm", "transporting", "funny"],
     "pace": "balanced",
     "audiences": ["solo", "partner", "friends", "family"],
-    "cast": [{ "id": "person-matt-damon", "name": "Matt Damon" }],
+    "cast": [{ "id": "person-matt-damon", "name": "Matt Damon", "profileUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Matt_Damon-60048.jpg?width=600" }],
     "content": { "certification": "PG-13", "kidsSafe": false },
     "availability": [
       { "region": "US", "providerId": "max", "providerName": "Max", "monetizationType": "subscription", "checkedAt": "2026-09-16T00:00:00Z" },

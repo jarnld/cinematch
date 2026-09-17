@@ -27,7 +27,7 @@ test("reports service health", async () => {
     assert.equal(body.status, "ok");
     assert.equal(body.catalogSize, 6);
     assert.equal(body.catalogSource, "fixture");
-    assert.equal(body.castProfiles, 0);
+    assert.equal(body.castProfiles, 6);
   });
 });
 
@@ -104,5 +104,6 @@ test("builds adaptive actor choices from earlier answers", async () => {
     assert.equal(body.kind, "actors");
     assert.ok(body.candidateMovieCount > 0);
     assert.ok(body.options.some((option) => option.value === "person-daniel-craig"));
+    assert.ok(body.options.every((option) => option.image?.startsWith("https://")));
   });
 });

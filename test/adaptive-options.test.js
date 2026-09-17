@@ -43,6 +43,16 @@ test("actor choices are ranked from the answers already given", () => {
   assert.doesNotMatch(result.options[0].subtitle, /Dark Film/);
 });
 
+test("actor choices preserve catalog profile images", () => {
+  const result = rankActorOptions(
+    { ...request, moods: ["funny"], pace: "fast", company: "friends" },
+    fixtureMovies
+  );
+
+  assert.ok(result.options.length > 0);
+  assert.ok(result.options.every((option) => option.image?.startsWith("https://")));
+});
+
 test("service choices expose only services with matching candidates", () => {
   const result = rankServiceOptions({ ...request, moods: ["funny"], pace: "fast", company: "friends" }, fixtureMovies);
 

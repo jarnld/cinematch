@@ -116,7 +116,24 @@ async function loadAdaptiveOptions(kind) {
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error?.message || "Could not adapt this question.");
-  return result.options.map((option) => [option.value, option.title, option.subtitle, option.image]);
+  return {
+    candidateMovieCount: result.candidateMovieCount,
+    options: result.options.map((option) => [option.value, option.title, option.subtitle, option.image])
+  };
+}
+
+function renderNoAdaptiveOptions() {
+  answerGrid.style.display = "block";
+  answerGrid.innerHTML = `
+    <div class="adaptive-empty">
+      <p>No movies in the current catalog fit every answer so far.</p>
+      <button class="primary-button" id="broadenSearch" type="button">Go back and broaden the search</button>
+    </div>`;
+  document.querySelector("#broadenSearch").addEventListener("click", () => {
+    current = Math.max(0, current - 1);
+    answerGrid.style.display = "grid";
+    renderQuestion();
+  });
 }
 
 function renderOptionCards(question, options, adaptive) {
@@ -166,10 +183,14 @@ async function renderQuestion() {
   if (["services", "actors"].includes(q.type)) {
     answerGrid.innerHTML = `<p class="options-loading">Rebuilding this round from your answers…</p>`;
     try {
-      const options = await loadAdaptiveOptions(q.type);
+      const result = await loadAdaptiveOptions(q.type);
       if (sequence !== renderSequence || q !== questions[current]) return;
-      if (options.length > 0) {
-        renderOptionCards(q, options, true);
+      if (result.candidateMovieCount === 0) {
+        renderNoAdaptiveOptions();
+        return;
+      }
+      if (result.options.length > 0) {
+        renderOptionCards(q, result.options, true);
         return;
       }
     } catch (error) {

@@ -8,7 +8,7 @@ CineMatch is a gamified movie concierge: answer six quick questions and get one 
 - A dedicated welcome screen and game-like round progression
 - Interactive runtime slider and visual actor selection
 - Runtime, mood, pace, company, actor, and streaming-service signals
-- Ranked recommendations from a small demo catalog
+- Ranked recommendations from a bundled 200-movie TMDB catalog
 - A dedicated matching transition and real TMDB poster imagery
 - Reroll with the existing answers, plus a full restart flow
 - A six-choice bonus round that refines each reroll without discarding the original answers
@@ -99,13 +99,13 @@ Then open `http://127.0.0.1:3001`.
 
 The same local process serves both the interface and the API: `GET /health` reports service status and `POST /api/recommend` returns recommendations. The interface now calls this endpoint instead of ranking films in the browser.
 
-The service uses a six-film fixture catalog to exercise real filtering and ranking behavior. Its availability records are test fixtures and must not be presented as current streaming data.
+The repository includes a 200-movie TMDB catalog snapshot, so a fresh clone uses real movie, cast, poster, certification, and US watch-provider records immediately. A separate six-film fixture remains solely for deterministic automated tests and emergency fallback behavior.
 
 For a future hosted environment, the same server accepts `HOST` and `PORT` environment variables. Local development remains locked to this computer by default; a host can set `HOST=0.0.0.0` when we are ready to deploy.
 
-## Build a real local movie catalog
+## Refresh the real movie catalog
 
-CineMatch can now create a local catalog from TMDB. The importer retrieves real titles, release years, runtimes, posters, cast, US certifications, and regional watch-provider records. It then adds CineMatch's own deterministic mood, pace, and audience tags based on genres. Those taste tags are editorial heuristics—not facts supplied by TMDB—and live in `src/tmdb-catalog.js` so they can be reviewed and improved.
+CineMatch ships with a committed TMDB catalog snapshot so no credential is needed just to run the app. The importer refreshes that snapshot with real titles, release years, runtimes, posters, cast, US certifications, and regional watch-provider records. It then adds CineMatch's own deterministic mood, pace, and audience tags based on genres. Those taste tags are editorial heuristics—not facts supplied by TMDB—and live in `src/tmdb-catalog.js` so they can be reviewed and improved.
 
 First, create a TMDB account and request an API Read Access Token from [TMDB's API settings](https://www.themoviedb.org/settings/api). Never paste the token into this repository or into browser code.
 
@@ -129,7 +129,7 @@ npm run check
 npm run dev
 ```
 
-By default the importer requests up to 200 well-established, currently released movies with watch options in the United States and writes `data/movies.catalog.json`. It intentionally does not download every movie in TMDB: the local recommendation engine works from a quality-controlled candidate pool that is large enough to offer variety and small enough to refresh quickly. That generated file is ignored by Git because provider availability changes over time. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
+By default the importer requests up to 200 well-established, currently released movies with watch options in the United States and writes `data/movies.catalog.json`. It intentionally does not download every movie in TMDB: the local recommendation engine works from a quality-controlled candidate pool that is large enough to offer variety and small enough to refresh quickly. Commit reviewed catalog refreshes so every clone runs against the same default data. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
 
 You can adjust a local import with `TMDB_REGION`, `TMDB_PAGES`, and `TMDB_MAX_MOVIES`. The site reads the generated file only when the server starts, so restart `npm run dev` after syncing. Visit `/health` and look for `"catalogSource":"tmdb"` to confirm that the real catalog loaded.
 
@@ -155,4 +155,4 @@ git commit -m "Describe the change"
 git push -u origin your-feature-name
 ```
 
-Keep secrets in environment variables and never commit `.env` files, API keys, Read Access Tokens, or `data/movies.catalog.json`. Each collaborator should create their own TMDB credential and run `npm run catalog:sync` locally. The six-film fixture catalog remains in Git so the app and all automated tests work immediately after cloning, even without TMDB access.
+Keep secrets in environment variables and never commit `.env` files, API keys, or Read Access Tokens. The catalog JSON contains normalized public movie metadata, not the TMDB credential, and reviewed refreshes should be committed. A collaborator only needs a personal TMDB credential when refreshing the snapshot; cloning and running CineMatch requires no credential. The six-film fixture remains in Git so automated tests stay deterministic.
