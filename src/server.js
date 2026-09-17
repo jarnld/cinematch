@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
-import { movies } from "./catalog.js";
+import { catalogSource, movies } from "./catalog.js";
 import { recommend, RecommendationError, RANKING_VERSION } from "./recommendation-engine.js";
 
 const MAX_BODY_BYTES = 100_000;
@@ -41,7 +41,7 @@ async function readJson(request) {
   }
 }
 
-export function createRecommendationServer() {
+export function createRecommendationServer({ catalog = movies, source = catalogSource } = {}) {
   return createServer(async (request, response) => {
     if (request.method === "GET" && staticAssets.has(request.url)) {
       sendStatic(response, staticAssets.get(request.url));
@@ -53,14 +53,15 @@ export function createRecommendationServer() {
         service: "cinematch-recommendation-service",
         status: "ok",
         rankingVersion: RANKING_VERSION,
-        catalogSize: movies.length
+        catalogSize: catalog.length,
+        catalogSource: source
       });
       return;
     }
 
     if (request.method === "POST" && request.url === "/api/recommend") {
       try {
-        sendJson(response, 200, recommend(await readJson(request)));
+        sendJson(response, 200, recommend(await readJson(request), catalog));
       } catch (error) {
         if (error instanceof RecommendationError) {
           sendJson(response, error.status, { error: { code: error.code, message: error.message } });

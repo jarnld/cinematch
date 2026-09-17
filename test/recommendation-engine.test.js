@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { filterMovies, recommend, RecommendationError } from "../src/recommendation-engine.js";
+import { fixtureMovies } from "../src/catalog.js";
 
 const baseRequest = {
   sessionId: "test-session",
@@ -15,7 +16,7 @@ const baseRequest = {
 };
 
 test("returns a deterministic recommendation with backups", () => {
-  const result = recommend(baseRequest);
+  const result = recommend(baseRequest, fixtureMovies);
 
   assert.equal(result.sessionId, "test-session");
   assert.equal(result.rankingVersion, "deterministic-v1");
@@ -27,14 +28,14 @@ test("returns a deterministic recommendation with backups", () => {
 });
 
 test("treats runtime as a hard maximum", () => {
-  const eligible = filterMovies({ ...baseRequest, runtimeMaxMinutes: 100 });
+  const eligible = filterMovies({ ...baseRequest, runtimeMaxMinutes: 100 }, fixtureMovies);
 
   assert.ok(eligible.every((movie) => movie.runtimeMinutes <= 100));
   assert.deepEqual(eligible.map((movie) => movie.id), ["palm-springs-2020"]);
 });
 
 test("requires selected streaming service availability", () => {
-  const eligible = filterMovies({ ...baseRequest, serviceIds: ["hulu"] });
+  const eligible = filterMovies({ ...baseRequest, serviceIds: ["hulu"] }, fixtureMovies);
 
   assert.deepEqual(
     eligible.map((movie) => movie.id).sort(),
@@ -43,7 +44,7 @@ test("requires selected streaming service availability", () => {
 });
 
 test("keeps only kid-safe movies when children are present", () => {
-  const eligible = filterMovies({ ...baseRequest, kidsPresent: true });
+  const eligible = filterMovies({ ...baseRequest, kidsPresent: true }, fixtureMovies);
 
   assert.deepEqual(eligible.map((movie) => movie.id), ["mitchells-vs-machines-2021"]);
 });
@@ -54,7 +55,7 @@ test("shorter refinement enforces a shorter runtime than the previous result", (
     runtimeMaxMinutes: 180,
     previousMovieId: "unbearable-weight-2022",
     refinement: "shorter"
-  });
+  }, fixtureMovies);
 
   assert.ok(eligible.length > 0);
   assert.ok(eligible.every((movie) => movie.runtimeMinutes < 107));
@@ -62,21 +63,21 @@ test("shorter refinement enforces a shorter runtime than the previous result", (
 });
 
 test("never recommends an excluded movie", () => {
-  const result = recommend({ ...baseRequest, excludedMovieIds: ["mitchells-vs-machines-2021"] });
+  const result = recommend({ ...baseRequest, excludedMovieIds: ["mitchells-vs-machines-2021"] }, fixtureMovies);
 
   assert.notEqual(result.movieId, "mitchells-vs-machines-2021");
 });
 
 test("returns a clear error when constraints remove every movie", () => {
   assert.throws(
-    () => recommend({ ...baseRequest, region: "GB" }),
+    () => recommend({ ...baseRequest, region: "GB" }, fixtureMovies),
     (error) => error instanceof RecommendationError && error.code === "NO_ELIGIBLE_MOVIES" && error.status === 422
   );
 });
 
 test("rejects malformed recommendation requests", () => {
   assert.throws(
-    () => recommend({ ...baseRequest, runtimeMaxMinutes: "two hours" }),
+    () => recommend({ ...baseRequest, runtimeMaxMinutes: "two hours" }, fixtureMovies),
     (error) => error instanceof RecommendationError && error.code === "INVALID_RUNTIME"
   );
 });

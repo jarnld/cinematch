@@ -100,6 +100,38 @@ The service uses a six-film fixture catalog to exercise real filtering and ranki
 
 For a future hosted environment, the same server accepts `HOST` and `PORT` environment variables. Local development remains locked to this computer by default; a host can set `HOST=0.0.0.0` when we are ready to deploy.
 
+## Build a real local movie catalog
+
+CineMatch can now create a local catalog from TMDB. The importer retrieves real titles, release years, runtimes, posters, cast, US certifications, and regional watch-provider records. It then adds CineMatch's own deterministic mood, pace, and audience tags based on genres. Those taste tags are editorial heuristics—not facts supplied by TMDB—and live in `src/tmdb-catalog.js` so they can be reviewed and improved.
+
+First, create a TMDB account and request an API Read Access Token from [TMDB's API settings](https://www.themoviedb.org/settings/api). Never paste the token into this repository or into browser code.
+
+In Windows PowerShell, from the CineMatch folder:
+
+```powershell
+$secret = Read-Host "Paste your TMDB Read Access Token" -AsSecureString
+$env:TMDB_READ_TOKEN = [Net.NetworkCredential]::new("", $secret).Password
+npm run catalog:sync
+npm run check
+npm run dev
+```
+
+On macOS or Linux:
+
+```bash
+read -s TMDB_READ_TOKEN
+export TMDB_READ_TOKEN
+npm run catalog:sync
+npm run check
+npm run dev
+```
+
+By default the importer requests up to 40 popular movies with watch options in the United States and writes `data/movies.catalog.json`. That generated file is intentionally ignored by Git because provider availability changes over time. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
+
+You can adjust a local import with `TMDB_REGION`, `TMDB_PAGES`, and `TMDB_MAX_MOVIES`. The site reads the generated file only when the server starts, so restart `npm run dev` after syncing. Visit `/health` and look for `"catalogSource":"tmdb"` to confirm that the real catalog loaded.
+
+TMDB watch-provider data is supplied through its JustWatch partnership and requires JustWatch attribution. The current UI must retain the TMDB notice and will need visible JustWatch attribution before a catalog-backed version is published.
+
 ## Repository setup
 
 This folder is intentionally ready to become its own Git repository. Keep secrets in environment variables and never commit `.env` files.

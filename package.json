@@ -7,6 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "catalog:sync": "node scripts/sync-tmdb-catalog.js",
     "dev": "node src/server.js",
     "start": "node src/server.js",
     "start:service": "node src/server.js",

@@ -3,3 +3,4 @@
 .env.*
 .sites-runtime/
 *.tgz
+/data/movies.catalog.json

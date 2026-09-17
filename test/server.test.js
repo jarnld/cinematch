@@ -2,9 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { createRecommendationServer } from "../src/server.js";
+import { fixtureMovies } from "../src/catalog.js";
 
 async function withServer(run) {
-  const server = createRecommendationServer();
+  const server = createRecommendationServer({ catalog: fixtureMovies, source: "fixture" });
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
 
@@ -25,6 +26,7 @@ test("reports service health", async () => {
     assert.equal(response.status, 200);
     assert.equal(body.status, "ok");
     assert.equal(body.catalogSize, 6);
+    assert.equal(body.catalogSource, "fixture");
   });
 });
 
