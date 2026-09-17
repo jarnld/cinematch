@@ -72,9 +72,33 @@ Then open [http://127.0.0.1:3000](http://127.0.0.1:3000) in a browser. Keep the 
 
 No `npm install` step is currently required because this version has no third-party code dependencies. Run `npm test` whenever you want to check the recommendation rules.
 
+### Easiest Windows setup
+
+The earlier `System32` message meant Command Prompt was looking in the Windows system folder rather than in the CineMatch repository. After cloning the repository and switching to `production-foundation`, open the `cinematch` folder in File Explorer and double-click `start-cinematch.cmd`.
+
+That launcher changes to the correct folder automatically, starts the service, and leaves a readable error message on screen if Node.js is missing. When it says CineMatch is ready, open [http://127.0.0.1:3000](http://127.0.0.1:3000). Keep the launcher window open while using the app.
+
+Before starting a development session, you can also run this from PowerShell inside the repository:
+
+```powershell
+npm run check
+npm run dev
+```
+
+`npm run check` runs the automated service and recommendation tests. If port 3000 is already being used, close the other CineMatch window or choose a different port in PowerShell:
+
+```powershell
+$env:PORT=3001
+npm run dev
+```
+
+Then open `http://127.0.0.1:3001`.
+
 The same local process serves both the interface and the API: `GET /health` reports service status and `POST /api/recommend` returns recommendations. The interface now calls this endpoint instead of ranking films in the browser.
 
 The service uses a six-film fixture catalog to exercise real filtering and ranking behavior. Its availability records are test fixtures and must not be presented as current streaming data.
+
+For a future hosted environment, the same server accepts `HOST` and `PORT` environment variables. Local development remains locked to this computer by default; a host can set `HOST=0.0.0.0` when we are ready to deploy.
 
 ## Repository setup
 

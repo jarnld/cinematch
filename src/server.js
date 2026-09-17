@@ -76,8 +76,30 @@ export function createRecommendationServer() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  const host = process.env.HOST ?? "127.0.0.1";
   const port = Number(process.env.PORT ?? 3000);
-  createRecommendationServer().listen(port, "127.0.0.1", () => {
-    console.log(`CineMatch is running at http://127.0.0.1:${port}`);
-  });
+
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    console.error("CineMatch could not start: PORT must be a whole number from 1 to 65535.");
+    process.exitCode = 1;
+  } else {
+    const server = createRecommendationServer();
+
+    server.on("error", (error) => {
+      if (error.code === "EADDRINUSE") {
+        console.error(`CineMatch could not start: port ${port} is already in use.`);
+        console.error("Close the other CineMatch window, or start with a different PORT.");
+      } else {
+        console.error(`CineMatch could not start: ${error.message}`);
+      }
+      process.exitCode = 1;
+    });
+
+    server.listen(port, host, () => {
+      const browserHost = ["0.0.0.0", "::"].includes(host) ? "127.0.0.1" : host;
+      console.log("CineMatch is ready.");
+      console.log(`Open http://${browserHost}:${port} in your browser.`);
+      console.log("Press Control-C to stop the service.");
+    });
+  }
 }
