@@ -38,6 +38,10 @@ The model should never invent the catalog or availability. Give it tools such as
 - A licensed availability API for region-specific streaming data
 - Anonymous sessions first; accounts only after repeat use proves valuable
 
+## Production foundation
+
+The production recommendation service is being designed in [`docs/production-foundation.md`](docs/production-foundation.md). Its API contracts live in [`schemas/`](schemas/) and separate hard constraints (runtime, region, availability, and safety) from softer taste signals (mood, pace, company, and cast).
+
 ## Repository setup
 
 This folder is intentionally ready to become its own Git repository. Keep secrets in environment variables and never commit `.env` files.

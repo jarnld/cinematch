@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinematch.app/schemas/recommendation-response.schema.json",
+  "title": "Recommendation response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sessionId", "rankingVersion", "movieId", "matchScore", "reason", "matchSignals", "backups"],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rankingVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "movieId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matchScore": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    },
+    "tradeoff": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "matchSignals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "backups": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["movieId", "reason"],
+        "properties": {
+          "movieId": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 240 }
+        }
+      }
+    }
+  }
+}

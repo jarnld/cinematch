@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinematch.app/schemas/movie.schema.json",
+  "title": "Movie catalog record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "year", "runtimeMinutes", "genres", "moods", "pace", "audiences", "cast", "availability", "source"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "year": {
+      "type": "integer",
+      "minimum": 1888,
+      "maximum": 2200
+    },
+    "runtimeMinutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "overview": {
+      "type": "string"
+    },
+    "posterUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "genres": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "moods": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "pace": {
+      "enum": ["slow", "meditative", "balanced", "fast", "relentless"]
+    },
+    "audiences": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["solo", "date", "partner", "friends", "family", "kids"]
+      }
+    },
+    "cast": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "certification": { "type": "string" },
+        "kidsSafe": { "type": "boolean" }
+      }
+    },
+    "availability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["region", "providerId", "providerName", "monetizationType", "checkedAt"],
+        "properties": {
+          "region": { "type": "string", "pattern": "^[A-Z]{2}$" },
+          "providerId": { "type": "string", "minLength": 1 },
+          "providerName": { "type": "string", "minLength": 1 },
+          "monetizationType": { "enum": ["subscription", "free", "ads", "rent", "buy"] },
+          "watchUrl": { "type": "string", "format": "uri" },
+          "checkedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "externalId"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "externalId": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
