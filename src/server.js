@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { catalogSource, movies } from "./catalog.js";
 import { recommend, RecommendationError, RANKING_VERSION } from "./recommendation-engine.js";
 import { rankActorOptions, rankServiceOptions } from "./adaptive-options.js";
+import { createAnalyticsStore } from "./analytics-store.js";
 
 const MAX_BODY_BYTES = 100_000;
 const staticAssets = new Map([
@@ -42,7 +43,11 @@ async function readJson(request) {
   }
 }
 
-export function createRecommendationServer({ catalog = movies, source = catalogSource } = {}) {
+export function createRecommendationServer({
+  catalog = movies,
+  source = catalogSource,
+  analytics = createAnalyticsStore({ filePath: new URL("../data/analytics-events.jsonl", import.meta.url) })
+} = {}) {
   return createServer(async (request, response) => {
     if (request.method === "GET" && staticAssets.has(request.url)) {
       sendStatic(response, staticAssets.get(request.url));
@@ -58,6 +63,25 @@ export function createRecommendationServer({ catalog = movies, source = catalogS
         catalogSource: source,
         castProfiles: catalog.flatMap((movie) => movie.cast).filter((person) => person.profileUrl).length
       });
+      return;
+    }
+
+    if (request.method === "GET" && request.url === "/api/analytics/summary") {
+      sendJson(response, 200, analytics.summary());
+      return;
+    }
+
+    if (request.method === "POST" && request.url === "/api/analytics/events") {
+      try {
+        analytics.record(await readJson(request));
+        sendJson(response, 202, { accepted: true });
+      } catch (error) {
+        if (error instanceof RecommendationError) {
+          sendJson(response, error.status, { error: { code: error.code, message: error.message } });
+          return;
+        }
+        sendJson(response, 400, { error: { code: "INVALID_EVENT", message: error.message } });
+      }
       return;
     }
 

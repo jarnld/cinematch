@@ -53,21 +53,73 @@ let shownMovieIds = [];
 let runtimeMinutes = 115;
 let lastMovie = null;
 let renderSequence = 0;
+let recommendationSessionId = newSessionId();
+let recommendationAttempts = 0;
+let rerollCount = 0;
+let sessionActive = false;
+let movieSelected = false;
+let dashboardReturnView = null;
+
+const recentMoviesKey = "cinematch-recent-movies";
+
+function newSessionId() {
+  return globalThis.crypto?.randomUUID?.() ?? `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function loadRecentMovieIds() {
+  try {
+    const ids = JSON.parse(localStorage.getItem(recentMoviesKey) ?? "[]");
+    return Array.isArray(ids) ? ids.filter((id) => typeof id === "string").slice(-20) : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberMovie(movieId) {
+  shownMovieIds = [...shownMovieIds.filter((id) => id !== movieId), movieId].slice(-20);
+  try {
+    localStorage.setItem(recentMoviesKey, JSON.stringify(shownMovieIds));
+  } catch {
+    // Recommendations still work when storage is disabled.
+  }
+}
+
+function track(name, properties = {}, { beacon = false } = {}) {
+  const payload = JSON.stringify({ name, sessionId: recommendationSessionId, properties });
+  if (beacon && navigator.sendBeacon) {
+    navigator.sendBeacon("/api/analytics/events", new Blob([payload], { type: "application/json" }));
+    return;
+  }
+  fetch("/api/analytics/events", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: payload,
+    keepalive: true
+  }).catch(() => { /* Analytics must never interrupt the movie flow. */ });
+}
 
 const landingView = document.querySelector("#landingView");
 const quizView = document.querySelector("#quizView");
 const loadingView = document.querySelector("#loadingView");
 const refineView = document.querySelector("#refineView");
 const resultView = document.querySelector("#resultView");
+const developerView = document.querySelector("#developerView");
 const answerGrid = document.querySelector("#answerGrid");
 const questionExtra = document.querySelector("#questionExtra");
+const journeyViews = [landingView, quizView, loadingView, refineView, resultView];
 
 function startQuiz() {
   current = 0;
   answers = {};
-  shownMovieIds = [];
+  shownMovieIds = loadRecentMovieIds();
   runtimeMinutes = 115;
   lastMovie = null;
+  recommendationSessionId = newSessionId();
+  recommendationAttempts = 0;
+  rerollCount = 0;
+  sessionActive = true;
+  movieSelected = false;
+  track("session_started", { entryPoint: "home" });
   landingView.hidden = true;
   loadingView.hidden = true;
   refineView.hidden = true;
@@ -94,12 +146,13 @@ function safeImageUrl(value) {
 
 function recommendationRequest() {
   return {
+    sessionId: recommendationSessionId,
     region: "US",
     runtimeMaxMinutes: answers.runtime || runtimeMinutes,
     moods: [answers.vibe],
     pace: answers.pace,
     company: answers.company,
-    actorIds: answers.actor ? [answers.actor] : [],
+    actorIds: answers.actor && answers.actor !== "any" ? [answers.actor] : [],
     serviceIds: answers.service && answers.service !== "any" ? [answers.service] : [],
     kidsPresent: answers.company === "kids",
     excludedMovieIds: shownMovieIds,
@@ -116,6 +169,7 @@ async function loadAdaptiveOptions(kind) {
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error?.message || "Could not adapt this question.");
+  if (kind === "actors") track("actor_page_loaded", { candidateMovieCount: result.candidateMovieCount, optionCount: result.options.length });
   return {
     candidateMovieCount: result.candidateMovieCount,
     options: result.options.map((option) => [option.value, option.title, option.subtitle, option.image])
@@ -194,6 +248,7 @@ async function renderQuestion() {
         return;
       }
     } catch (error) {
+      if (q.type === "actors") track("actor_page_failed", { message: error.message });
       console.warn(error);
     }
   }
@@ -220,6 +275,7 @@ function renderRuntimeSlider() {
   slider.addEventListener("input", updateSlider);
   document.querySelector("#runtimeConfirm").addEventListener("click", () => {
     answers.runtime = runtimeMinutes;
+    track("preference_answered", { question: "runtime", value: runtimeMinutes, step: current + 1 });
     current += 1;
     answerGrid.style.display = "grid";
     renderQuestion();
@@ -229,6 +285,7 @@ function renderRuntimeSlider() {
 
 function selectAnswer(key, value) {
   answers[key] = value;
+  track("preference_answered", { question: key, value, step: current + 1 });
   answerGrid.querySelectorAll(".answer-card").forEach(card => card.classList.toggle("selected", card.dataset.value === value));
   window.setTimeout(() => {
     if (current < questions.length - 1) {
@@ -251,6 +308,12 @@ async function beginMatching() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   const request = recommendationRequest();
+  recommendationAttempts += 1;
+  track("recommendation_requested", {
+    attempt: recommendationAttempts,
+    isReroll: recommendationAttempts > 1,
+    rerollCount
+  });
 
   try {
     const [response] = await Promise.all([
@@ -263,8 +326,15 @@ async function beginMatching() {
     ]);
     const result = await response.json();
     if (!response.ok) throw new Error(result.error?.message || "Recommendation failed.");
+    track("recommendation_returned", {
+      attempt: recommendationAttempts,
+      movieId: result.movie?.id,
+      matchScore: result.matchScore,
+      isReroll: recommendationAttempts > 1
+    });
     showResult(result);
   } catch (error) {
+    track("recommendation_failed", { attempt: recommendationAttempts, message: error.message });
     document.querySelector(".loading-note").textContent = `${error.message} Restart and try a broader set of choices.`;
     document.querySelector("#restartTop").style.visibility = "visible";
   }
@@ -272,7 +342,7 @@ async function beginMatching() {
 
 function showResult(result) {
   const movie = result.movie;
-  shownMovieIds.push(movie.id);
+  rememberMovie(movie.id);
   document.querySelector("#movieTitle").textContent = movie.title;
   document.querySelector("#movieMeta").textContent = `${movie.year} · ${formatRuntime(movie.runtimeMinutes)} · ${movie.genres.join(" / ")}`;
   document.querySelector("#movieReason").textContent = result.reason;
@@ -282,6 +352,11 @@ function showResult(result) {
   poster.src = movie.posterUrl;
   poster.alt = `${movie.title} movie poster`;
   lastMovie = movie;
+  movieSelected = false;
+  const watchButton = document.querySelector("#watchButton");
+  watchButton.textContent = "Choose this movie";
+  watchButton.dataset.state = "choose";
+  document.querySelector("#availabilityNote").textContent = "Choose it first, then we’ll point you toward streaming.";
   loadingView.hidden = true;
   quizView.hidden = true;
   resultView.hidden = false;
@@ -305,17 +380,108 @@ function showRefinement() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function formatDuration(milliseconds) {
+  if (!Number.isFinite(milliseconds)) return "—";
+  const seconds = Math.round(milliseconds / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}m ${seconds % 60}s`;
+}
+
+function formatPercent(value) {
+  return Number.isFinite(value) ? `${value}%` : "—";
+}
+
+async function loadDashboard() {
+  const status = document.querySelector("#dashboardStatus");
+  status.hidden = false;
+  status.textContent = "Loading analytics…";
+  try {
+    const response = await fetch("/api/analytics/summary", { cache: "no-store" });
+    if (!response.ok) throw new Error("Analytics could not be loaded.");
+    const data = await response.json();
+    const kpis = [
+      ["Recommendation success", formatPercent(data.kpis.recommendationSuccessRate), "Returned ÷ requested sessions"],
+      ["Movie selection", formatPercent(data.kpis.movieSelectionRate), "Selected ÷ sessions with a result"],
+      ["Median decision time", formatDuration(data.kpis.medianTimeToDecisionMs), "Start to first selection"],
+      ["Watch intent", formatPercent(data.kpis.watchIntentRate), "Streaming clicks ÷ selections"],
+      ["Reroll rate", formatPercent(data.kpis.rerollRate), "Sessions rerolled after a result"],
+      ["Rerolls before selection", data.kpis.averageRerollsBeforeSelection ?? "—", `Average · median ${data.kpis.medianRerollsBeforeSelection ?? "—"}`],
+      ["Unique recommendations", formatPercent(data.kpis.recommendationUniquenessRate), "Unique titles ÷ all results"],
+      ["Repeat rate", formatPercent(data.kpis.recommendationRepeatRate), "Repeated titles across results"]
+    ];
+    document.querySelector("#kpiGrid").innerHTML = kpis.map(([label, value, note]) => `
+      <article class="kpi-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(note)}</small></article>`).join("");
+
+    const funnelMax = Math.max(1, ...data.funnel.map((step) => step.count));
+    document.querySelector("#funnel").innerHTML = data.funnel.map((step) => `
+      <div class="funnel-step">
+        <div><span>${escapeHtml(step.label)}</span><strong>${step.count}</strong></div>
+        <i><b style="width:${Math.round((step.count / funnelMax) * 100)}%"></b></i>
+      </div>`).join("");
+    document.querySelector("#sessionCount").textContent = `${data.sessionCount} total sessions`;
+
+    const diagnosticItems = [
+      ["Recommendations returned", data.diagnostics.recommendationsReturned],
+      ["Unique movies returned", data.diagnostics.uniqueMoviesReturned],
+      ["Within-session repeats", data.diagnostics.withinSessionRepeats],
+      ["Failed recommendations", data.diagnostics.failedRecommendations],
+      ["Abandoned sessions", data.diagnostics.abandonedSessions],
+      ["Events retained", data.eventCount]
+    ];
+    document.querySelector("#diagnostics").innerHTML = diagnosticItems.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${value}</dd></div>`).join("");
+
+    document.querySelector("#sessionRows").innerHTML = data.recentSessions.length ? data.recentSessions.map((session) => `
+      <tr>
+        <td><code>${escapeHtml(session.sessionId)}</code></td>
+        <td>${escapeHtml(new Date(session.startedAt).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</td>
+        <td><span class="status-pill status-${escapeHtml(session.status.toLowerCase().replace(/\s+/g, "-"))}">${escapeHtml(session.status)}</span></td>
+        <td>${session.answered}</td><td>${session.returned}</td><td>${session.rerolls}</td><td>${formatDuration(session.decisionMs)}</td>
+      </tr>`).join("") : `<tr><td colspan="7" class="empty-table">No journeys recorded yet. Complete a CineMatch session to populate this view.</td></tr>`;
+    status.textContent = `Updated ${new Date(data.generatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" })}`;
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+function toggleDeveloperView() {
+  const button = document.querySelector("#developerButton");
+  if (!developerView.hidden) {
+    developerView.hidden = true;
+    (dashboardReturnView ?? landingView).hidden = false;
+    dashboardReturnView = null;
+    button.textContent = "Developer";
+    return;
+  }
+  dashboardReturnView = journeyViews.find((view) => !view.hidden) ?? landingView;
+  journeyViews.forEach((view) => { view.hidden = true; });
+  developerView.hidden = false;
+  button.textContent = "Back to CineMatch";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  loadDashboard();
+}
+
 function restart() {
+  if (sessionActive && !movieSelected) {
+    track("session_abandoned", { reason: "restart", step: current + 1 });
+  }
   current = 0;
   answers = {};
-  shownMovieIds = [];
+  shownMovieIds = loadRecentMovieIds();
   runtimeMinutes = 115;
   lastMovie = null;
+  recommendationSessionId = newSessionId();
+  recommendationAttempts = 0;
+  rerollCount = 0;
+  sessionActive = false;
+  movieSelected = false;
   quizView.hidden = true;
   loadingView.hidden = true;
   refineView.hidden = true;
   resultView.hidden = true;
   landingView.hidden = false;
+  developerView.hidden = true;
+  document.querySelector("#developerButton").textContent = "Developer";
   document.querySelector("#restartTop").style.visibility = "hidden";
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -325,16 +491,38 @@ document.querySelector("#backButton").addEventListener("click", () => { if (curr
 document.querySelector("#restartTop").addEventListener("click", restart);
 document.querySelector("#restartResult").addEventListener("click", restart);
 document.querySelector("#anotherButton").addEventListener("click", showRefinement);
+document.querySelector("#developerButton").addEventListener("click", toggleDeveloperView);
+document.querySelector("#refreshAnalytics").addEventListener("click", loadDashboard);
 document.querySelector("#refineBack").addEventListener("click", () => {
   refineView.hidden = true;
   resultView.hidden = false;
 });
 document.querySelectorAll(".refine-card").forEach(button => button.addEventListener("click", () => {
   answers.refinement = button.dataset.refine;
+  rerollCount += 1;
+  track("recommendation_rerolled", { refinement: answers.refinement, rerollCount, previousMovieId: lastMovie?.id });
   beginMatching();
 }));
 document.querySelector("#watchButton").addEventListener("click", () => {
+  const button = document.querySelector("#watchButton");
+  if (button.dataset.state === "choose") {
+    movieSelected = true;
+    sessionActive = false;
+    track("movie_selected", { movieId: lastMovie?.id, rerollCount });
+    button.dataset.state = "watch";
+    button.textContent = "Where to watch";
+    document.querySelector("#availabilityNote").textContent = "Great pick. Check where it’s streaming next.";
+    return;
+  }
+  track("streaming_clicked", { movieId: lastMovie?.id, service: answers.service ?? "any" });
   document.querySelector("#availabilityNote").textContent = "Live availability is not connected yet. Current service values are test fixtures.";
+});
+
+window.addEventListener("pagehide", () => {
+  if (sessionActive && !movieSelected) {
+    track("session_abandoned", { reason: "page_exit", step: current + 1 }, { beacon: true });
+    sessionActive = false;
+  }
 });
 
 restart();

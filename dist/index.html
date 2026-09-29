@@ -15,7 +15,10 @@
         <span class="brand-mark" aria-hidden="true"></span>
         <span>CineMatch</span>
       </a>
-      <button class="quiet-button" id="restartTop" type="button">Restart</button>
+      <nav class="top-actions" aria-label="CineMatch utilities">
+        <button class="quiet-button" id="developerButton" type="button">Developer</button>
+        <button class="quiet-button" id="restartTop" type="button">Restart</button>
+      </nav>
     </header>
 
     <section id="landingView" class="landing-view" aria-labelledby="landingTitle">
@@ -95,6 +98,39 @@
         <a href="https://www.justwatch.com" target="_blank" rel="noreferrer">Watch-provider data via JustWatch</a>
         <span>This product uses the TMDB API but is not endorsed or certified by TMDB.</span>
       </footer>
+    </section>
+
+    <section id="developerView" class="developer-view" hidden aria-labelledby="developerTitle">
+      <div class="developer-head">
+        <div>
+          <p class="eyebrow">EXPERIMENT HEALTH</p>
+          <h1 id="developerTitle">Developer analytics</h1>
+          <p>Anonymous, session-level signals for the movie-decision journey.</p>
+        </div>
+        <button class="secondary-button" id="refreshAnalytics" type="button">Refresh data</button>
+      </div>
+      <p class="dashboard-status" id="dashboardStatus" role="status">Loading analytics…</p>
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="dashboard-grid">
+        <article class="dashboard-panel">
+          <div class="panel-heading"><p class="eyebrow">USER FUNNEL</p><span id="sessionCount"></span></div>
+          <div class="funnel" id="funnel"></div>
+        </article>
+        <article class="dashboard-panel">
+          <div class="panel-heading"><p class="eyebrow">RECOMMENDATION QUALITY</p></div>
+          <dl class="diagnostic-list" id="diagnostics"></dl>
+        </article>
+      </div>
+      <article class="dashboard-panel sessions-panel">
+        <div class="panel-heading"><p class="eyebrow">RECENT SESSIONS</p><span>Newest activity first</span></div>
+        <div class="table-scroll">
+          <table class="session-table">
+            <thead><tr><th>Session</th><th>Started</th><th>Status</th><th>Answers</th><th>Results</th><th>Rerolls</th><th>Decision</th></tr></thead>
+            <tbody id="sessionRows"></tbody>
+          </table>
+        </div>
+      </article>
+      <p class="developer-note">Prototype data is stored locally on this server as append-only JSON events. No names, emails, IP addresses, or account identifiers are collected.</p>
     </section>
   </main>
   <script src="app.js"></script>

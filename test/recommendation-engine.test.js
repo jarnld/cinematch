@@ -15,16 +15,37 @@ const baseRequest = {
   excludedMovieIds: []
 };
 
-test("returns a deterministic recommendation with backups", () => {
+test("returns a stable personalized recommendation with backups for the same session", () => {
   const result = recommend(baseRequest, fixtureMovies);
+  const repeated = recommend(baseRequest, fixtureMovies);
 
   assert.equal(result.sessionId, "test-session");
-  assert.equal(result.rankingVersion, "deterministic-v1");
-  assert.equal(result.movieId, "mitchells-vs-machines-2021");
+  assert.equal(result.rankingVersion, "personalized-diversity-v2");
+  assert.equal(result.movieId, repeated.movieId);
   assert.equal(result.movie.id, result.movieId);
-  assert.equal(result.movie.title, "The Mitchells vs. the Machines");
   assert.ok(result.matchScore >= 0 && result.matchScore <= 100);
   assert.ok(result.backups.length <= 2);
+});
+
+test("varies close matches across recommendation sessions", () => {
+  const winners = new Set(
+    Array.from({ length: 30 }, (_, index) => recommend({ ...baseRequest, sessionId: `session-${index}` }, fixtureMovies).movieId)
+  );
+
+  assert.ok(winners.size > 1);
+});
+
+test("penalizes another installment from a recently shown franchise", () => {
+  const first = { ...fixtureMovies[2], id: "toy-story-1", title: "Toy Story" };
+  const sequel = { ...fixtureMovies[2], id: "toy-story-2", title: "Toy Story 2" };
+  const alternative = { ...fixtureMovies[2], id: "other-animation", title: "A Different Adventure" };
+  const result = recommend({
+    ...baseRequest,
+    sessionId: "franchise-test",
+    excludedMovieIds: [first.id]
+  }, [first, sequel, alternative]);
+
+  assert.equal(result.movieId, alternative.id);
 });
 
 test("treats runtime as a hard maximum", () => {

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { movies as defaultCatalog, findMovie } from "./catalog.js";
 
-export const RANKING_VERSION = "deterministic-v1";
+export const RANKING_VERSION = "personalized-diversity-v2";
 
 const allowedMoods = new Set(["warm", "tense", "funny", "transporting", "dark", "romantic"]);
 const allowedPaces = new Set(["slow", "meditative", "balanced", "fast", "relentless", "surprise"]);
@@ -40,6 +40,10 @@ export function validateRequest(input) {
 
   if (!allowedCompanies.has(input.company)) {
     throw new RecommendationError("company is not supported.", "INVALID_COMPANY");
+  }
+
+  if (input.sessionId !== undefined && (typeof input.sessionId !== "string" || input.sessionId.length === 0)) {
+    throw new RecommendationError("sessionId must be a non-empty string.", "INVALID_SESSION");
   }
 
   for (const field of ["serviceIds", "actorIds", "excludedMovieIds"]) {
@@ -141,7 +145,40 @@ function describeMatch(movie, request, breakdown) {
 }
 
 function normalizedMatchScore(total) {
-  return Math.max(45, Math.min(98, Math.round((total / 106) * 100)));
+  return Math.max(45, Math.min(98, Math.round((total / 114) * 100)));
+}
+
+function stableVarietyScore(sessionId, movieId) {
+  let hash = 2166136261;
+  for (const character of `${sessionId}:${movieId}`) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % 9;
+}
+
+function franchiseKey(title) {
+  return title
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\b(?:part|chapter|episode|volume|vol)\s+(?:\d+|[ivxlcdm]+)\b/g, " ")
+    .replace(/(?:\s|:|-)+(?:\d+|[ivxlcdm]+)$/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function diversityPenalty(movie, recentMovies) {
+  const movieCast = new Set(movie.cast.map((person) => person.id));
+  const family = franchiseKey(movie.title);
+  let penalty = 0;
+
+  for (const recent of recentMovies) {
+    if (family.length >= 4 && family === franchiseKey(recent.title)) penalty = Math.max(penalty, 24);
+    const sharedCast = recent.cast.filter((person) => movieCast.has(person.id)).length;
+    if (sharedCast >= 3) penalty = Math.max(penalty, Math.min(18, 8 + sharedCast * 2));
+  }
+
+  return penalty;
 }
 
 function summarizeMovie(movie) {
@@ -157,6 +194,7 @@ function summarizeMovie(movie) {
 
 export function recommend(input, catalog = defaultCatalog) {
   const request = validateRequest(input);
+  const sessionId = request.sessionId ?? randomUUID();
   const eligibleMovies = filterMovies(request, catalog);
 
   if (eligibleMovies.length === 0) {
@@ -167,15 +205,26 @@ export function recommend(input, catalog = defaultCatalog) {
     );
   }
 
+  const recentIds = new Set([...request.excludedMovieIds, request.previousMovieId].filter(Boolean));
+  const recentMovies = catalog.filter((movie) => recentIds.has(movie.id));
   const ranked = eligibleMovies
-    .map((movie) => ({ movie, ...scoreMovie(movie, request) }))
+    .map((movie) => {
+      const scored = scoreMovie(movie, request);
+      const variety = stableVarietyScore(sessionId, movie.id);
+      const diversity = diversityPenalty(movie, recentMovies);
+      return {
+        movie,
+        total: scored.total + variety - diversity,
+        breakdown: { ...scored.breakdown, variety, diversity: -diversity }
+      };
+    })
     .sort((a, b) => b.total - a.total || a.movie.title.localeCompare(b.movie.title));
 
   const winner = ranked[0];
   const explanation = describeMatch(winner.movie, request, winner.breakdown);
 
   return {
-    sessionId: request.sessionId ?? randomUUID(),
+    sessionId,
     rankingVersion: RANKING_VERSION,
     movieId: winner.movie.id,
     movie: summarizeMovie(winner.movie),

@@ -9,7 +9,7 @@ const temporaryPath = `${outputPath}.tmp-${process.pid}`;
 const token = process.env.TMDB_READ_TOKEN;
 const region = (process.env.TMDB_REGION ?? "US").toUpperCase();
 const pages = parsePositiveInteger(process.env.TMDB_PAGES, 10, "TMDB_PAGES");
-const maxMovies = parsePositiveInteger(process.env.TMDB_MAX_MOVIES, 200, "TMDB_MAX_MOVIES");
+const maxMovies = parsePositiveInteger(process.env.TMDB_MAX_MOVIES, 600, "TMDB_MAX_MOVIES");
 
 function parsePositiveInteger(value, fallback, name) {
   if (value === undefined) return fallback;
@@ -44,21 +44,27 @@ async function tmdbRequest(path, query = {}) {
 
 async function discoverMovieIds() {
   const ids = [];
-  for (let page = 1; page <= pages; page += 1) {
-    const response = await tmdbRequest("/discover/movie", {
-      include_adult: false,
-      include_video: false,
-      language: "en-US",
-      page,
-      "primary_release_date.lte": new Date().toISOString().slice(0, 10),
-      region,
-      sort_by: "popularity.desc",
-      "vote_average.gte": 5.5,
-      "vote_count.gte": 500,
-      watch_region: region,
-      with_watch_monetization_types: "flatrate|free|ads|rent|buy"
-    });
-    ids.push(...response.results.map((movie) => movie.id));
+  const discoveryLanes = [
+    { sort_by: "popularity.desc", "vote_average.gte": 5.5, "vote_count.gte": 300 },
+    { sort_by: "vote_average.desc", "vote_average.gte": 7, "vote_count.gte": 1_000 },
+    { sort_by: "primary_release_date.desc", "vote_average.gte": 6, "vote_count.gte": 100 }
+  ];
+
+  for (const lane of discoveryLanes) {
+    for (let page = 1; page <= pages; page += 1) {
+      const response = await tmdbRequest("/discover/movie", {
+        include_adult: false,
+        include_video: false,
+        language: "en-US",
+        page,
+        "primary_release_date.lte": new Date().toISOString().slice(0, 10),
+        region,
+        watch_region: region,
+        with_watch_monetization_types: "flatrate|free|ads|rent|buy",
+        ...lane
+      });
+      ids.push(...response.results.map((movie) => movie.id));
+    }
   }
   return [...new Set(ids)].slice(0, maxMovies);
 }

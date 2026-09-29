@@ -9,6 +9,7 @@ CineMatch is a gamified movie concierge: answer six quick questions and get one 
 - Interactive runtime slider and visual actor selection
 - Runtime, mood, pace, company, actor, and streaming-service signals
 - Ranked recommendations from a bundled 200-movie TMDB catalog
+- Session-aware variety plus local repeat avoidance, so close matches rotate instead of always resolving to the same title
 - A dedicated matching transition and real TMDB poster imagery
 - Reroll with the existing answers, plus a full restart flow
 - A six-choice bonus round that refines each reroll without discarding the original answers
@@ -99,6 +100,12 @@ Then open `http://127.0.0.1:3001`.
 
 The same local process serves both the interface and the API: `GET /health` reports service status and `POST /api/recommend` returns recommendations. The interface now calls this endpoint instead of ranking films in the browser.
 
+### Developer analytics
+
+Open **Developer** in the top navigation to view the prototype OEC dashboard. CineMatch records anonymous, session-level journey events in `data/analytics-events.jsonl` and summarizes them through `GET /api/analytics/summary`. The local event file is intentionally ignored by Git.
+
+Tracked events are `session_started`, `preference_answered`, `recommendation_requested`, `recommendation_returned`, `recommendation_failed`, `recommendation_rerolled`, `movie_selected`, `streaming_clicked`, `actor_page_loaded`, `actor_page_failed`, and `session_abandoned`. Event properties are limited to short primitive values; names, emails, IP addresses, and account identifiers are not collected.
+
 The repository includes a 200-movie TMDB catalog snapshot, so a fresh clone uses real movie, cast, poster, certification, and US watch-provider records immediately. A separate six-film fixture remains solely for deterministic automated tests and emergency fallback behavior.
 
 For a future hosted environment, the same server accepts `HOST` and `PORT` environment variables. Local development remains locked to this computer by default; a host can set `HOST=0.0.0.0` when we are ready to deploy.
@@ -129,7 +136,7 @@ npm run check
 npm run dev
 ```
 
-By default the importer requests up to 200 well-established, currently released movies with watch options in the United States and writes `data/movies.catalog.json`. It intentionally does not download every movie in TMDB: the local recommendation engine works from a quality-controlled candidate pool that is large enough to offer variety and small enough to refresh quickly. Commit reviewed catalog refreshes so every clone runs against the same default data. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
+By default the importer requests up to 600 well-established, currently released movies with watch options in the United States and writes `data/movies.catalog.json`. It combines popularity, top-rated, and recent-release discovery lanes instead of taking only the first popularity pages. It intentionally does not download every movie in TMDB: the local recommendation engine works from a quality-controlled candidate pool that is large enough to offer variety and small enough to refresh quickly. The currently committed snapshot contains 200 real titles; refresh and commit it when a larger reviewed snapshot is wanted. If the file is missing, CineMatch automatically falls back to the six-film fixture catalog.
 
 You can adjust a local import with `TMDB_REGION`, `TMDB_PAGES`, and `TMDB_MAX_MOVIES`. The site reads the generated file only when the server starts, so restart `npm run dev` after syncing. Visit `/health` and look for `"catalogSource":"tmdb"` to confirm that the real catalog loaded.
 
