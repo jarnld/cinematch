@@ -1,10 +1,10 @@
 # CineMatch
 
-CineMatch is a gamified movie concierge: answer six quick questions and get one confident recommendation instead of another infinite grid.
+CineMatch is a gamified movie concierge: answer seven quick questions and get one confident recommendation instead of another infinite grid.
 
 ## What works now
 
-- Six-question, mobile-friendly recommendation flow with six choices per question
+- Seven-question, mobile-friendly recommendation flow with explicit genre, mood, pace, audience, service, and adaptive actor choices
 - A dedicated welcome screen and game-like round progression
 - Interactive runtime slider and visual actor selection
 - Runtime, mood, pace, company, actor, and streaming-service signals
@@ -14,6 +14,7 @@ CineMatch is a gamified movie concierge: answer six quick questions and get one 
 - Reroll with the existing answers, plus a full restart flow
 - A six-choice bonus round that refines each reroll without discarding the original answers
 - Adaptive service and cast rounds generated from the answers already given
+- Relevance-weighted exploration so every eligible movie retains a measurable chance without making weak matches as likely as strong ones
 - Accessible keyboard controls and reduced-motion support
 
 Open `dist/index.html` or serve `dist/` with any static web server.
@@ -75,6 +76,8 @@ npm run dev
 Then open [http://127.0.0.1:3000](http://127.0.0.1:3000) in a browser. Keep the Terminal or PowerShell window open while using CineMatch; press `Control-C` there to stop it.
 
 No `npm install` step is currently required because this version has no third-party code dependencies. Run `npm test` whenever you want to check the recommendation rules.
+
+Run `npm run audit:recommendations` to exercise the full catalog across thousands of deterministic sessions and preference combinations. The audit fails if any broadly eligible movie never appears or if the ten most frequent winners exceed 25% of the tested recommendations.
 
 ### Easiest Windows setup
 

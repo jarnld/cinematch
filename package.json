@@ -8,6 +8,7 @@
   },
   "scripts": {
     "catalog:sync": "node scripts/sync-tmdb-catalog.js",
+    "audit:recommendations": "node scripts/audit-recommendations.js",
     "dev": "node src/server.js",
     "start": "node src/server.js",
     "start:service": "node src/server.js",

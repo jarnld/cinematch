@@ -1,12 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { filterMovies, recommend, RecommendationError } from "../src/recommendation-engine.js";
+import { filterMovies, recommend, RecommendationError, scoreMovie } from "../src/recommendation-engine.js";
 import { fixtureMovies } from "../src/catalog.js";
 
 const baseRequest = {
   sessionId: "test-session",
   region: "US",
   runtimeMaxMinutes: 120,
+  genres: ["comedy"],
   moods: ["funny"],
   pace: "fast",
   company: "friends",
@@ -20,7 +21,7 @@ test("returns a stable personalized recommendation with backups for the same ses
   const repeated = recommend(baseRequest, fixtureMovies);
 
   assert.equal(result.sessionId, "test-session");
-  assert.equal(result.rankingVersion, "personalized-diversity-v2");
+  assert.equal(result.rankingVersion, "relevance-exploration-v3");
   assert.equal(result.movieId, repeated.movieId);
   assert.equal(result.movie.id, result.movieId);
   assert.ok(result.matchScore >= 0 && result.matchScore <= 100);
@@ -33,6 +34,33 @@ test("varies close matches across recommendation sessions", () => {
   );
 
   assert.ok(winners.size > 1);
+});
+
+test("gives every eligible movie a measurable exploration path", () => {
+  const broadRequest = {
+    ...baseRequest,
+    runtimeMaxMinutes: 180,
+    genres: [],
+    moods: ["warm"],
+    pace: "surprise",
+    company: "partner"
+  };
+  const winners = new Set(
+    Array.from({ length: 5_000 }, (_, index) => recommend({ ...broadRequest, sessionId: `explore-${index}` }, fixtureMovies).movieId)
+  );
+
+  assert.deepEqual([...winners].sort(), fixtureMovies.map((movie) => movie.id).sort());
+});
+
+test("genre is a stronger signal than broad audience fit", () => {
+  const comedy = fixtureMovies.find((movie) => movie.id === "palm-springs-2020");
+  const scienceFiction = fixtureMovies.find((movie) => movie.id === "arrival-2016");
+  const request = { ...baseRequest, genres: ["science-fiction-fantasy"], moods: ["warm"], pace: "surprise", company: "date" };
+  const { breakdown: comedyBreakdown } = scoreMovie(comedy, request);
+  const { breakdown: scienceFictionBreakdown } = scoreMovie(scienceFiction, request);
+
+  assert.ok(scienceFictionBreakdown.genre > comedyBreakdown.genre);
+  assert.ok(scienceFictionBreakdown.genre > scienceFictionBreakdown.company);
 });
 
 test("penalizes another installment from a recently shown franchise", () => {

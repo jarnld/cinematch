@@ -108,7 +108,7 @@ export function rankActorOptions(input, catalog, limit = 6) {
     .map(({ value, title, image, movies }) => ({
       value,
       title,
-      subtitle: `${movies.length} matching ${movies.length === 1 ? "movie" : "movies"} · ${request.moods[0]} mood`,
+      subtitle: `${movies.length} ${movies.length === 1 ? "match" : "matches"} · ${movies.slice(0, 2).join(" / ")}`,
       ...(image ? { image } : {})
     }));
 

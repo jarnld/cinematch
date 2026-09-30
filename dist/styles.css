@@ -56,6 +56,10 @@ h1 { margin: 0; font-family: "Space Grotesk", sans-serif; letter-spacing: -.055e
 .answer-copy span { color: var(--muted); font-size: .85rem; line-height: 1.3; }
 .answer-number { display: block; margin-bottom: 22px; color: #56565b; font-size: .7rem; }
 .answer-card.selected .answer-number { color: var(--red); }
+.genre-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.multi-actions { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 12px; }
+.multi-actions > span { color: var(--muted); font-size: .8rem; }
+.multi-actions button:disabled { opacity: .35; cursor: default; }
 .runtime-game { padding: 12px 0 0; }
 .runtime-readout { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 36px; }
 .runtime-readout strong { font: 700 clamp(4rem, 10vw, 7rem)/.8 "Space Grotesk", sans-serif; letter-spacing: -.08em; }
@@ -182,6 +186,8 @@ h1 { margin: 0; font-family: "Space Grotesk", sans-serif; letter-spacing: -.055e
   .landing-copy > p:not(.eyebrow) { max-width: 290px; }
   .question-wrap { padding: 34px 0 46px; }
   .answer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .genre-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .multi-actions { align-items: stretch; flex-direction: column; }
   .answer-card { min-height: 104px; padding: 16px; }
   .actor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .actor-card { min-height: 238px; padding: 0; }

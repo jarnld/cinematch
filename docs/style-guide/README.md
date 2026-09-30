@@ -7,7 +7,7 @@
 
 ## 1. Product and visual character
 
-CineMatch is a focused, game-like movie concierge. Its existing interface turns six quick decisions into one confident recommendation rather than exposing a catalog to browse.
+CineMatch is a focused, game-like movie concierge. Its interface turns seven quick decisions into one confident recommendation rather than exposing a catalog to browse.
 
 The implemented visual language is:
 
@@ -103,7 +103,7 @@ These values are present in the stylesheet but are not yet named as tokens.
 
 1. Use Space Grotesk for headlines, labels, key values, and choice titles; use DM Sans for explanatory sentences and metadata.
 2. Headlines use tight negative tracking and compact line height. Body copy uses normal tracking and more generous line height.
-3. Eyebrows are always short, uppercase, red, and widely tracked. In the quiz they combine progress and context: `ROUND 02 · SET THE MOOD`.
+3. Eyebrows are always short, uppercase, red, and widely tracked. In the quiz they combine progress and context: `ROUND 03 · CHOOSE A MOOD`.
 4. Keep question titles phrased as direct questions. Keep descriptions to one brief sentence.
 5. Retain fluid `clamp()` sizing for large type rather than fixed desktop/mobile sizes.
 

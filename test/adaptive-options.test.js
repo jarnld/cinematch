@@ -39,8 +39,7 @@ test("actor choices are ranked from the answers already given", () => {
 
   assert.equal(result.candidateMovieCount, 2);
   assert.equal(result.options[0].value, "dark-actor");
-  assert.equal(result.options[0].subtitle, "1 matching movie · dark mood");
-  assert.doesNotMatch(result.options[0].subtitle, /Dark Film/);
+  assert.equal(result.options[0].subtitle, "1 match · Dark Film");
 });
 
 test("actor choices preserve catalog profile images", () => {

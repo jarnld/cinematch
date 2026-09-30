@@ -3,23 +3,33 @@ const questions = [
     key: "runtime", type: "slider", eyebrow: "ROUND 01 · TONIGHT'S WINDOW", title: "How much time do you have?", help: "Drag until the runtime fits your night."
   },
   {
-    key: "vibe", eyebrow: "ROUND 02 · SET THE MOOD", title: "What should it feel like?", help: "Choose the feeling you want when the credits roll.",
+    key: "genres", type: "multiselect", eyebrow: "ROUND 02 · PICK A GENRE", title: "What kind of movie do you want?", help: "Choose one or two. This is the strongest taste signal.",
     options: [
-      ["warm", "Warm", "Hopeful and human"], ["tense", "Tense", "Keep me guessing"],
-      ["funny", "Funny", "Smart over silly"], ["transporting", "Transporting", "Take me somewhere else"],
-      ["dark", "Dark", "Let it get under my skin"], ["romantic", "Romantic", "Earn the chemistry"]
+      ["comedy", "Comedy", "Make me laugh"], ["drama", "Drama", "Character and emotion"],
+      ["action-adventure", "Action / Adventure", "Momentum and spectacle"], ["thriller-mystery", "Thriller / Mystery", "Tension and clues"],
+      ["science-fiction-fantasy", "Sci-fi / Fantasy", "Another world or reality"], ["horror", "Horror", "Scare me"],
+      ["romance", "Romance", "Chemistry and connection"], ["family-animation", "Family / Animation", "All-ages storytelling"],
+      ["documentary", "Documentary", "Something real"]
     ]
   },
   {
-    key: "pace", eyebrow: "ROUND 03 · PICK A RHYTHM", title: "How should tonight move?", help: "Slow burn, rocket launch, or somewhere between.",
+    key: "vibe", eyebrow: "ROUND 03 · CHOOSE A MOOD", title: "What mood are you looking for?", help: "Pick the tone you want—not the genre.",
     options: [
-      ["slow", "Slow burn", "Atmosphere first"], ["meditative", "Meditative", "Quiet and absorbing"],
-      ["balanced", "Steady pull", "Story with momentum"], ["fast", "Fast", "Hook me early"],
-      ["relentless", "Relentless", "No time to look away"], ["surprise", "Surprise me", "Ignore the rules"]
+      ["funny", "Light and funny", "Easy laughs"], ["warm", "Feel-good", "Hopeful and human"],
+      ["tense", "Suspenseful", "Keep me guessing"], ["romantic", "Emotional", "Connection and feeling"],
+      ["dark", "Dark and intense", "Something heavier"], ["transporting", "Thought-provoking", "Stay with me afterward"]
     ]
   },
   {
-    key: "company", eyebrow: "ROUND 04 · WHO'S WATCHING", title: "Who has the remote?", help: "Movie-night democracy changes the answer.",
+    key: "pace", eyebrow: "ROUND 04 · CHOOSE A PACE", title: "How fast should it move?", help: "Choose how much momentum you want.",
+    options: [
+      ["slow", "Slow and atmospheric", "Let the story breathe"], ["balanced", "Balanced", "A steady story"],
+      ["fast", "Fast-paced", "Hook me early"], ["relentless", "Nonstop", "Maximum momentum"],
+      ["meditative", "Quiet and reflective", "Character over action"], ["surprise", "No preference", "Any pace works"]
+    ]
+  },
+  {
+    key: "company", eyebrow: "ROUND 05 · WHO'S WATCHING", title: "Who are you watching with?", help: "This helps us choose the right audience and content level.",
     options: [
       ["solo", "Just me", "A personal pick"], ["date", "Date night", "Something with chemistry"],
       ["partner", "My partner", "A shared obsession"], ["friends", "Friends", "Crowd-pleasing energy"],
@@ -27,7 +37,7 @@ const questions = [
     ]
   },
   {
-    key: "service", type: "services", eyebrow: "ROUND 05 · WHERE YOU WATCH", title: "Where should we look?", help: "These services are ranked from the movies still matching your night.",
+    key: "service", type: "services", eyebrow: "ROUND 06 · WHERE YOU WATCH", title: "Which service should we use?", help: "These services have movies matching your answers.",
     options: [
       ["netflix", "Netflix", "Your first stop"], ["max", "Max", "Prestige and blockbusters"],
       ["prime", "Prime Video", "Included or rentable"], ["hulu", "Hulu", "Movies and originals"],
@@ -35,7 +45,7 @@ const questions = [
     ]
   },
   {
-    key: "actor", type: "actors", eyebrow: "ROUND 06 · CAST YOUR VOTE", title: "Who fits this version of tonight?", help: "The cast below comes from movies matching your first five answers.",
+    key: "actor", type: "actors", eyebrow: "ROUND 07 · CAST YOUR VOTE", title: "Who would you like to watch?", help: "These actors appear in movies matching your first six answers.",
     options: [
       ["person-amy-adams", "Amy Adams", "Emotional precision", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amy_Adams_.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Amy_Adams_.jpg"],
       ["person-daniel-craig", "Daniel Craig", "Charisma with an edge", "https://commons.wikimedia.org/wiki/Special:Redirect/file/Daniel_Craig_in_2021.jpg?width=600", "https://commons.wikimedia.org/wiki/File:Daniel_Craig_in_2021.jpg"],
@@ -149,6 +159,7 @@ function recommendationRequest() {
     sessionId: recommendationSessionId,
     region: "US",
     runtimeMaxMinutes: answers.runtime || runtimeMinutes,
+    genres: answers.genres ?? [],
     moods: [answers.vibe],
     pace: answers.pace,
     company: answers.company,
@@ -216,6 +227,42 @@ function renderOptionCards(question, options, adaptive) {
   }
 }
 
+function renderGenreChoices(question) {
+  const selected = new Set(answers.genres ?? []);
+  const update = () => {
+    answerGrid.querySelectorAll(".answer-card").forEach((card) => {
+      card.classList.toggle("selected", selected.has(card.dataset.value));
+      card.setAttribute("aria-pressed", String(selected.has(card.dataset.value)));
+    });
+    const confirm = document.querySelector("#genreConfirm");
+    confirm.disabled = selected.size === 0;
+    confirm.textContent = selected.size === 2 ? "Continue with 2 genres →" : selected.size === 1 ? "Continue with 1 genre →" : "Choose up to 2 genres";
+  };
+
+  answerGrid.classList.add("genre-grid");
+  answerGrid.innerHTML = `${question.options.map(([value, title, subtitle], index) => `
+    <button class="answer-card" data-value="${escapeHtml(value)}" type="button" aria-pressed="false">
+      <span class="answer-number">${String(index + 1).padStart(2, "0")}</span>
+      <span class="answer-copy"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(subtitle)}</span></span>
+    </button>`).join("")}
+    <div class="multi-actions"><span>Select up to two</span><button class="primary-button" id="genreConfirm" type="button" disabled>Choose up to 2 genres</button></div>`;
+
+  answerGrid.querySelectorAll(".answer-card").forEach((button) => button.addEventListener("click", () => {
+    const value = button.dataset.value;
+    if (selected.has(value)) selected.delete(value);
+    else if (selected.size < 2) selected.add(value);
+    button.setAttribute("aria-pressed", String(selected.has(value)));
+    update();
+  }));
+  document.querySelector("#genreConfirm").addEventListener("click", () => {
+    answers.genres = [...selected];
+    track("preference_answered", { question: "genres", value: answers.genres.join(","), step: current + 1 });
+    current += 1;
+    renderQuestion();
+  });
+  update();
+}
+
 async function renderQuestion() {
   const sequence = ++renderSequence;
   const q = questions[current];
@@ -231,6 +278,11 @@ async function renderQuestion() {
 
   if (q.type === "slider") {
     renderRuntimeSlider();
+    return;
+  }
+
+  if (q.type === "multiselect") {
+    renderGenreChoices(q);
     return;
   }
 

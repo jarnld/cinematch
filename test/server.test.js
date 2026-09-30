@@ -51,6 +51,7 @@ test("serves a recommendation through the API", async () => {
       body: JSON.stringify({
         region: "US",
         runtimeMaxMinutes: 120,
+        genres: ["comedy"],
         moods: ["funny"],
         pace: "fast",
         company: "friends",
@@ -61,7 +62,7 @@ test("serves a recommendation through the API", async () => {
     const body = await response.json();
 
     assert.equal(response.status, 200);
-    assert.equal(body.rankingVersion, "personalized-diversity-v2");
+    assert.equal(body.rankingVersion, "relevance-exploration-v3");
     assert.equal(typeof body.movieId, "string");
     assert.equal(body.movie.id, body.movieId);
   });

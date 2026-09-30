@@ -4,7 +4,7 @@
   "title": "Recommendation request",
   "type": "object",
   "additionalProperties": false,
-  "required": ["region", "runtimeMaxMinutes", "moods", "pace", "company", "serviceIds"],
+  "required": ["region", "runtimeMaxMinutes", "genres", "moods", "pace", "company", "serviceIds"],
   "properties": {
     "sessionId": {
       "type": "string",
@@ -26,6 +26,14 @@
       "uniqueItems": true,
       "items": {
         "enum": ["warm", "tense", "funny", "transporting", "dark", "romantic"]
+      }
+    },
+    "genres": {
+      "type": "array",
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["comedy", "drama", "action-adventure", "thriller-mystery", "science-fiction-fantasy", "horror", "romance", "family-animation", "documentary"]
       }
     },
     "pace": {
